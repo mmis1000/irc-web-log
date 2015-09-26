@@ -1,9 +1,13 @@
 ## irc-log-bot
+
 ===========
+
 this is used with <a href='https://github.com/YSITD/irc-reply-bot'>irc-reply-bot</a> 's commandlog2 module
 
-and provides a material design styled web-log
+And provides a material design styled web-log
+
 ===========
+
 ## to install
 
 pre-requirement:
