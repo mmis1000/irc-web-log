@@ -1,0 +1,82 @@
+
+<link href="/css/header.css" rel="stylesheet" type="text/css" />
+<link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<div class="header">
+  <button class="button menu" title="show menu">
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="date">
+    <select class="date-select">
+      <%
+        var day = moment().utcOffset(globalConfig.timezone).startOf('day');
+        function getNextDay () {
+          day = day.subtract(1, 'days');
+          return day.format('YYYY-MM-DD');
+        }
+        function getDay () {
+          return day.format('YYYY-MM-DD');
+        }
+        function isSelected (day) {
+          return selectedDay === day ? 'selected' : '';
+        }
+        if (selectedDay === 'today') { 
+      %>
+        
+        <optgroup label="Today">
+          <option value="today"  selected    ><%= getDay() %></option>
+        </optgroup>
+        
+        <optgroup label="Earlier days" id="earlier">
+          <option value="<%= getNextDay() %>"><%= getDay() %></option>
+          <option value="<%= getNextDay() %>"><%= getDay() %></option>
+          <option value="<%= getNextDay() %>"><%= getDay() %></option>
+          <option value="<%= getNextDay() %>"><%= getDay() %></option>
+          <option value="<%= getNextDay() %>"><%= getDay() %></option>
+        </optgroup>
+      <% } else { %>
+        <optgroup label="Today">
+          <option value="today"><%= getDay() %></option>
+        </optgroup>
+        <optgroup label="Earlier days" id="earlier">
+        </optgroup>
+      <% } %>
+      <optgroup label="Other days">
+        <option value="others">尚未完成</option>
+      </optgroup>
+    </select> 
+  </div>
+  <!-- auto scroll
+  <button class="button auto-scroll">
+    <i class="fa fa-long-arrow-down"></i>
+  </button>
+  -->
+  <!-- jump to top -->
+  <button class="button" data-href="#top" title="jump to top">
+    <i class="fa fa-angle-double-up"></i>
+  </button>
+  
+  <!-- jump to bottom -->
+  <button class="button" data-href="#bottom" title="jump to bottom">
+    <i class="fa fa-angle-double-down"></i>
+  </button>
+</div>
+
+<div class="overlay">
+  
+</div>
+<div class="sidebar">
+  <a class="item" href="/">
+    Home Page
+  </a>
+  <a class="item" href="javascript:location.reload()">
+    <i class="fa fa-repeat"></i>
+    reload
+  </a>
+</div>
+<script>
+  head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", 
+    "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js",
+    "//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js",
+    "/js/header.js"
+  ]);
+</script>

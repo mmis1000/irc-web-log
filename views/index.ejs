@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>HTML barebone</title>
+    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="HTML barebone">
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+    <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+
+    <!-- start of SEO area -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta property="og:title" content="HTML barebone" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://jsbin.com/" />
+    <meta property="og:image" content="http://jsbin.com/favicon.ico" />
+    <!-- end of SEO area -->
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/index.css" rel="stylesheet" type="text/css" />
+
+  </head>
+  <body>
+    <div class="wrap-outer">
+      <div class="wrap-inner">
+        <div class="main-wrap">
+          <div class="title">IRC LOG BOT</div>
+          <div class="item-wrap">
+            <% if (globalConfig.indexItems.length > 0) { %>
+              <% globalConfig.indexItems.forEach(function(item){ %>
+                <a href="<%= item.path %>">
+                  <button class="item" ><%= item.text %></button>
+                </a>
+              <% }); %>
+            <% } else { %>
+              hello to the logbot
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+  <head>
+    <meta charset="utf-8">
+    <title><%= message.from %> => <%= message.to %>: <%= message.message.replace(/(?:\u0003\d\d?,\d\d?|\u0003\d\d?|\u0002|\u001d|\u000f|\u0016|\u001f)+/g, '') %> #<%= message._id %></title>
+    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="<%= message.from %>: <%= message.message.slice(0, 100)%>">
+    <!--
+    <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+    <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
+    -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- start of SEO area -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta property="og:title" content="<%= message.from %> => <%= message.to %>: <%= message.message.replace(/(?:\u0003\d\d?,\d\d?|\u0003\d\d?|\u0002|\u001d|\u000f|\u0016|\u001f)+/g, '') %> #<%= message._id %>" />
+    <meta property="og:type" content="website" />
+    <!--
+    <meta property="og:url" content="http://jsbin.com/" />
+    <meta property="og:image" content="http://jsbin.com/favicon.ico" />
+    -->
+    <!-- end of SEO area -->
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/message.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrap-outer">
+      <div class="wrap-inner">
+        
+            
+        <blockquote class="message-wrap">
+          <div class="header">
+            <span class="from"><%= message.from %></span>
+            says to 
+            <% if (message.to.search(/#/) === 0) { %>
+              <a href="/channel/<%= message.to.slice(1) %>/<%= 
+               moment(message.time)
+              .utcOffset(globalConfig.timezone)
+              .locale(globalConfig.locale)
+              .format('YYYY-MM-DD');
+              %>/#<%= message._id %>">
+                <span class="to"><%= message.to %></span> 
+              </a>
+            <% } else { %>
+              <span class="to"><%= message.to %></span>
+            <% } %>
+            
+          </div>
+          <div class='word'><%- parseColor(escapeHTML(message.message)) %></div>
+          <div class="footer">
+            at
+            <span class="time"><%=
+              moment(message.time)
+              .utcOffset(globalConfig.timezone)
+              .locale(globalConfig.locale)
+              .format('llll');
+            %></span>
+          </div>
+        </blockquote>
+            
+      </div>
+    </div>
+  </body>
+</html>

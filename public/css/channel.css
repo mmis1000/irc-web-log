@@ -1,0 +1,84 @@
+a, a:link, a:visited, a:hover, a:focus, a:active {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover, a:focus  {
+  text-decoration: underline;
+}
+
+.anchor {
+  display:block;
+  height:0px;
+  width:0px;
+}
+
+#messages {
+  position:relative;
+  margin:1em;
+}
+#messages .message div {
+  /*overflow: hidden;*/
+  float: left;
+  background: transparent;
+  box-sizing: border-box;
+  padding: 8px;
+  font-size:16px;
+  line-height:20px;
+}
+
+#messages .message:after {
+  display: table;
+  content: "　";
+  clear: both;
+  font-size: 0px;
+}
+
+#messages .message .time {
+  /*width : 40%;*/
+  color : #888888;
+}
+#messages .message .from {
+ /* width : 60%;*/
+}
+#messages .message .word {
+  width : 100%;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  -moz-hyphens: auto;
+  hyphens: auto;
+}
+#messages .message:nth-child(2n+1) {
+  background : #dddddd;
+}
+
+#messages .head {
+  display:none;
+}
+
+  #messages .message {
+    overflow: hidden;
+  }
+@media only screen and (min-width: 600px) {
+  #messages .message:nth-child(2n+1) {
+    background : transparent;
+  }
+  #messages .message {
+    border-bottom: #bbbbbb solid 1px;
+  }
+  #messages .message .time {
+    min-width:120px;
+  }
+  #messages .message .from {
+    min-width:120px;
+    text-align:right;
+  }
+  #messages .message .word {
+    float: none;
+  }
+  #messages .message .word {
+    float: none;
+    width : auto;
+    margin-left : 240px;
+  }
+}

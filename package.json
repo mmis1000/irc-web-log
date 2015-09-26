@@ -1,0 +1,23 @@
+{
+  "name": "irc-log-web",
+  "version": "0.0.0",
+  "description": "web log for the log command of irc-reply-bot project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "log",
+    "irc"
+  ],
+  "author": "mmis1000",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.3.2",
+    "express": "^4.13.0",
+    "moment": "^2.10.3",
+    "mongoose": "^4.0.6",
+    "mubsub": "^1.0.4",
+    "socket.io": "^1.3.5"
+  }
+}
