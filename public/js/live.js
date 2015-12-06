@@ -256,6 +256,7 @@ var autoScroll = true;
 socket.on('update', function (ev) {
   console.log(ev.data);
   if (ev.data.to === channel) {
+    var shouldScroll = autoScroll && ($(window).scrollTop() + $(window).height() == $(document).height());
     $('#messages').append(
       $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
         moment(ev.data.time)
@@ -271,7 +272,7 @@ socket.on('update', function (ev) {
         '</div>' + 
         '<div class="word">' + parseColor(safe_tags_replace(ev.data.message)) + '</div></div>')
     );
-    if (autoScroll) {
+    if (shouldScroll) {
       $("html, body").animate({ scrollTop: $(document).height() }, 500);
     }
   }
