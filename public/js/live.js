@@ -257,21 +257,43 @@ socket.on('update', function (ev) {
   console.log(ev.data);
   if (ev.data.to === channel) {
     var shouldScroll = autoScroll && ($(window).scrollTop() + $(window).height() == $(document).height());
-    $('#messages').append(
-      $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
-        moment(ev.data.time)
-        .utcOffset(config.timezone)
-        .locale(config.locale) 
-        .format('a hh:mm:ss') + '</a></div>' + 
-        '<div class="from">' + 
-        '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
-        ev.data._id+
-        '">'+
-        ev.data.from + 
-        '</a>' +
-        '</div>' + 
-        '<div class="word">' + parseColor(safe_tags_replace(ev.data.message)) + '</div></div>')
-    );
+    if (!ev.data.message.match(/^\u0001ACTION.+\u0001$/i)) {
+      $('#messages').append(
+        $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
+          moment(ev.data.time)
+          .utcOffset(config.timezone)
+          .locale(config.locale) 
+          .format('a hh:mm:ss') + '</a></div>' + 
+          '<div class="from">' + 
+          '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
+          ev.data._id+
+          '">'+
+          ev.data.from + 
+          '</a>' +
+          '</div>' + 
+          '<div class="word">' + parseColor(safe_tags_replace(ev.data.message)) + '</div></div>')
+      );
+    } else {
+      $('#messages').append(
+        $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
+          moment(ev.data.time)
+          .utcOffset(config.timezone)
+          .locale(config.locale) 
+          .format('a hh:mm:ss') + '</a></div>' + 
+          '<div class="from">' + 
+          '<a href="/message/'+
+          ev.data._id+
+          '">'+
+          '*' + 
+          '</a>' +
+          '</div>' + 
+          '<div class="word">' + 
+          '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
+          ev.data._id+
+          '">' + ev.data.from + '</a> ' +
+          parseColor(safe_tags_replace((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(ev.data.message)[1])) + '</div></div>')
+      );
+    }
     if (shouldScroll) {
       $("html, body").animate({ scrollTop: $(document).height() }, 500);
     }
