@@ -70,7 +70,10 @@ html, body {
 .time {
   font-size: 14px;
 }
-
+.feels {
+  /* font-style: italic; */
+  color: #333;
+}
 
 @media only screen and (min-width: 360px) {
   .word {

@@ -257,7 +257,42 @@ socket.on('update', function (ev) {
   console.log(ev.data);
   if (ev.data.to === channel) {
     var shouldScroll = autoScroll && ($(window).scrollTop() + $(window).height() == $(document).height());
-    if (!ev.data.message.match(/^\u0001ACTION.+\u0001$/i)) {
+    if (ev.data.medias && ev.data.medias.length > 0) {
+      $('#messages').append(
+        $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
+          moment(ev.data.time)
+          .utcOffset(config.timezone)
+          .locale(config.locale) 
+          .format('a hh:mm:ss') + '</a></div>' + 
+          '<div class="from">' + 
+          '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
+          ev.data._id+
+          '">'+
+          ev.data.from + 
+          '</a>' +
+          '</div>' + 
+          '<div class="word">' + 
+          ev.data.medias.map(function (media) {
+            return media.files.map(function (file) {
+              var size = ' ';
+              if (!file.isThumb) return '';
+              if (file.photoSize && file.photoSize.length === 2) {
+                size = ' width=' + file.photoSize[0] + ' height=' + file.photoSize[1] + ' '
+              }
+              var src = file.contentSrc;
+              if (noWebp && file.MIME === 'image/webp') {
+                src = src + '?convert=png'
+              }
+              var info = " data-role=" + media.role +
+                        " data-media-id=" + media._id +
+                        " data-mime=" + media.MIME + " ";
+              return '<img src="/files/' + src +'" alt="[sticker](media:'+ file.contentSrc +')"' + size + info + '>'
+            }).join('');
+          }).join('') +
+          '</div></div>')
+      );
+      
+    } else if (!ev.data.message.match(/^\u0001ACTION.+\u0001$/i)) {
       $('#messages').append(
         $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
           moment(ev.data.time)

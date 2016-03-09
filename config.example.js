@@ -8,5 +8,9 @@ module.exports = {
   "indexItems" : [
     {"text" : "Web Chat for #test5566 on freenode.net", "path" : "http://webchat.freenode.net/?channels=%23test5566"},
     {"text" : "Log for #test5566", "path" : "/channel/test5566/today"}
-  ]
+  ],
+  "enable-db-manager": true,
+  "db-manager-path": '/mongo_express',
+  "db-manager-account": 'root',
+  "db-manager-password": "Pa$$$wOr0d"
 }

@@ -52,7 +52,36 @@
           <div class="word">message</div>
         </div> 
         <% messages.forEach(function(message) { %>
-          <% if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
+          <% if (message.medias && message.medias.length > 0) { %>
+            <div id="<%= message._id %>" class="message">
+              <div class="time"><a href="#<%= message._id %>"><%= 
+                moment(message.time)
+                .utcOffset(globalConfig.timezone)
+                .locale(globalConfig.locale) 
+                .format('a hh:mm:ss')
+              %></a></div>
+              <div class="from">
+                <a style="color: <%= getColor(message.from); %>" href="/message/<%= message._id %>">
+                  <%= message.from %>
+                </a>
+              </div>
+              <div class="word"><!--
+                --><% message.medias.forEach(function (media) { %><!--
+                  --><% media.files.forEach(function (file) { %><!--
+                    --><% if (!file.isThumb) {return} %><!--
+                    --><img class="lazy" data-original="/files/<%= file.contentSrc %>" 
+                        <% if (file.photoSize && file.photoSize.length === 2 ) { %>
+                        width=<%= file.photoSize[0] %> height=<%= file.photoSize[1] %>
+                        <% } %> 
+                        data-role="<%= media.role %>"
+                        data-media-id="<%= media._id %>"
+                        data-mime="<%= file.MIME %>"
+                        alt="[<%= media.role %>](media:<%= file.contentSrc %>)"><!--
+                  --><% }) %><!--   
+                --><% }) %><!--
+              --></div>
+            </div>
+          <% } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
             <div id="<%= message._id %>" class="message">
               <div class="time"><a href="#<%= message._id %>"><%= 
                 moment(message.time)
@@ -122,14 +151,27 @@
         $("body").on("click", "a", scroll_if_anchor);
       });
     </script>
+    
+    <script>
+      head.load([
+        "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js",
+        "/components/fancybox/lib/jquery.mousewheel-3.0.6.pack.js", 
+        "/components/fancybox/source/jquery.fancybox.css?v=2.1.5",                                                                                                            
+        "/components/fancybox/source/jquery.fancybox.pack.js?v=2.1.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6",                                                                                                 
+        "/components/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7",                                                                                                 
+        "/components/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7",
+        "/js/jquery.lazyload.js",
+        "/js/channel-common.js",
     <% if (isToday && query.live !== 'false') { %>
-      <script>
-        head.load([
-          "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js",
-          "/socket.io/socket.io.js", 
-          "/js/md5.min.js",                                                                                                            
-          "/js/live.js"]);
-      </script>
+        "/socket.io/socket.io.js", 
+        "/js/md5.min.js",                                                                                                            
+        "/js/live.js"
     <% } %>
+      ]);
+    </script>
+    
   </body>
 </html>
