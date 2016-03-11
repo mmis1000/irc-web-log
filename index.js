@@ -10,6 +10,7 @@ var mongoose = require('mongoose');
     mongoose.Promise = Q .Promise;
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
+var parseRange = require('range-parser');
 
 var Grid = require('gridfs-stream')
 var moment = require('moment');
@@ -162,6 +163,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
 
 })
 router.get('/files/:id', function (req, res, next) {
+  
   var promise = File.findOne({
     _id: req.params.id
   }).exec()
@@ -169,10 +171,28 @@ router.get('/files/:id', function (req, res, next) {
     if (doc) {
       res.set('Content-Type', doc.MIME);
       res.set('Content-Length', doc.length);
-      var readstream = gfs.createReadStream({
-        filename: doc.contentSrc,
-        root: 'FileContent'
-      });
+      var range = req.headers.range ? parseRange(doc.length, req.headers.range) : null;
+      if (range === null){
+        var readstream = gfs.createReadStream({
+          filename: doc.contentSrc,
+          root: 'FileContent'
+        });
+      } else if (range !== -1 && range.type === 'bytes' && range.length === 1) {
+        res.set('Content-Length', range[0].end - range[0].start + 1);
+        var readstream = gfs.createReadStream({
+          filename: doc.contentSrc,
+          root: 'FileContent',
+          range: {
+            startPos: range[0].start,
+            endPos: range[0].end + 1
+          }
+        });
+        res.status(206);
+      } else {
+        res.set('Content-Type', 'text/html');
+        res.set('Content-Length', '');
+        return res.status(416).end('range not satisfied');
+      }
       readstream.on('error', function (err) {
         res.set('Content-Type', 'text/plain');
         res.set('Content-Length', '');
@@ -221,16 +241,62 @@ router.get('/medias/:id', function (req, res, next) {
 })
 
 router.get('/api/dump/', function (req, res, next) {
-  
-  Message.find({})
+  var isStart = true;
+  var ended = false;
+  var stream = Message.find({})
   .sort({ 'time' : 1})
+  .stream()
+  .on('data', function (doc) {
+    if (ended) return;
+    if (isStart) {
+      res.set('Content-Type', 'application/json; charset=utf-8');
+      res.write('[');
+      res.write(JSON.stringify(doc));
+      isStart = false;
+    } else {
+      res.write(',');
+      res.write(JSON.stringify(doc));
+    }
+    // do something with the mongoose document
+  })
+  .on('error', function (err) {
+    if (ended) return;
+    ended = true;
+    res.status(500).end(err.stack ? err.stack : err.toString());
+    // handle the error
+  }).on('close', function () {
+    if (ended) return;
+    ended = true;
+    res.end(']');
+    // the stream is closed
+  });
+  
+  req.on("close", function() {
+    console.log('connection aborted')
+    try {
+      stream.destroy()
+    } catch (err) {
+      console.error(err)
+    }
+  });
+  
+  req.on("end", function() {
+    try {
+      stream.destroy()
+    } catch (err) {
+      console.error(err)
+    }
+  });
+
+
+  /*
   .exec(function (err, messages) {
     if (err) {
       res.json({ _error : err.toString() });
       return;
     }
     res.json(messages);
-  });
+  });*/
 });
 
 router.get('/', function (req, res, next) {
@@ -245,7 +311,7 @@ var mongo_express_config = require('./mongo_express_config');
   mongo_express_config.mongodb.server = temp.hostname;
   mongo_express_config.mongodb.port = parseInt(temp.port) || 27017;
   if (temp.auth) {
-    mongo_express_config.mongodb.auth[0].db = temp.pathname.replace(/^\//, '');
+    mongo_express_config.mongodb.auth[0].database = temp.pathname.replace(/^\//, '');
     mongo_express_config.mongodb.auth[0].username = temp.auth.split(':')[0]
     mongo_express_config.mongodb.auth[0].password = temp.auth.split(':')[1]
   }
