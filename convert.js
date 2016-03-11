@@ -35,7 +35,7 @@ function convert(stream, id, toExt) {
   var targetFileName = path.resolve(targetDir, id + '.' + toExt);
   
   var defered = Q.defer();
-  if (0 > ['png', 'jpg', 'jpeg', 'gif'].indexOf(toExt)) {
+  if (0 > ['png', 'jpg', 'jpeg', 'gif', 'webp'].indexOf(toExt)) {
     defered.reject(new Error('not allowed extension'));
     return defered.promise;
   }

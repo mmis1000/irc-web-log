@@ -313,7 +313,7 @@ var mongo_express_config = require('./mongo_express_config');
   if (temp.auth) {
     mongo_express_config.mongodb.auth[0].database = temp.pathname.replace(/^\//, '');
     mongo_express_config.mongodb.auth[0].username = temp.auth.split(':')[0]
-    mongo_express_config.mongodb.auth[0].password = temp.auth.split(':')[1]
+    mongo_express_config.mongodb.auth[0].password = decodeURIComponent(temp.auth.split(':').slice(1).join(':'))
   }
    mongo_express_config.basicAuth.username = config["db-manager-account"]
    mongo_express_config.basicAuth.password = config["db-manager-password"]
