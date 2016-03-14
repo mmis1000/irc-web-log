@@ -3,6 +3,7 @@ require('coffee-script/register')
 var http = require('http');
 var path = require('path');
 
+var range = require('express-range');
 var socketio = require('socket.io');
 var express = require('express');
 var Q = require('q');
@@ -28,6 +29,11 @@ var config = require('./config')
 var router = express();
 var server = http.createServer(router);
 var io = socketio.listen(server);
+
+router.use(range({
+  accept: 'bytes',
+  limit: 10,
+}));
 
 router.locals.moment = moment;
 router.locals.globalConfig = config;
@@ -179,13 +185,22 @@ router.get('/files/:id', function (req, res, next) {
         });
       } else if (range !== -1 && range.type === 'bytes' && range.length === 1) {
         res.set('Content-Length', range[0].end - range[0].start + 1);
+        var temp = {};
+        if (range[0].start !== 0) {
+          temp.startPos = range[0].start;
+        }
+        if (range[0].end !== doc.length + 1) {
+          temp.endPos = range[0].end + 1;
+        }
+    		res.range({
+    			first: range[0].start,
+    			last: range[0].end,
+    			length: doc.length
+    		});
         var readstream = gfs.createReadStream({
           filename: doc.contentSrc,
           root: 'FileContent',
-          range: {
-            startPos: range[0].start,
-            endPos: range[0].end + 1
-          }
+          range: temp
         });
         res.status(206);
       } else {
