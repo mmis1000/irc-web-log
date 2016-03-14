@@ -56,9 +56,18 @@ a:hover, a:focus  {
   display:none;
 }
 
-  #messages .message {
-    overflow: hidden;
-  }
+#messages .message {
+  overflow: hidden;
+}
+  
+.media {
+  cursor: pointer;
+}
+
+.media_photo, .media_video{
+  border-radius: 4px;
+  box-shadow: 0px 0px 2px 1px #777777;
+}
 @media only screen and (min-width: 600px) {
   #messages .message:nth-child(2n+1) {
     background : transparent;

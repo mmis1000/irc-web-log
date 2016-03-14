@@ -68,15 +68,21 @@
               <div class="word"><!--
                 --><% message.medias.forEach(function (media) { %><!--
                   --><% media.files.forEach(function (file) { %><!--
-                    --><% if (!file.isThumb) {return} %><!--
-                    --><img class="lazy" data-original="/files/<%= file.contentSrc %>" 
-                        <% if (file.photoSize && file.photoSize.length === 2 ) { %>
-                        width=<%= file.photoSize[0] %> height=<%= file.photoSize[1] %>
-                        <% } %> 
-                        data-role="<%= media.role %>"
-                        data-media-id="<%= media._id %>"
-                        data-mime="<%= file.MIME %>"
-                        alt="[<%= media.role %>](media:<%= file.contentSrc %>)"><!--
+                    --><% if (media.role !== 'audio') { %><!--
+                      --><% if (!file.isThumb) {return} %><!--
+                      --><img class="lazy media media_<%= media.role %>" data-original="/files/<%= file.contentSrc %>" 
+                          <% if (file.photoSize && file.photoSize.length === 2 ) { %>
+                          width=<%= file.photoSize[0] %> height=<%= file.photoSize[1] %>
+                          <% } %> 
+                          data-role="<%= media.role %>"
+                          data-media-id="<%= media._id %>"
+                          data-mime="<%= file.MIME %>"
+                          alt="[<%= media.role %>](media:<%= file.contentSrc %>)"><!--
+                    --><% } else { %><!--
+                      --><audio controls preload="none">
+                          <source src="/files/<%= file.contentSrc %>" type="<%= file.MIME %>">
+                        </audio><!--
+                    --><% } %><!--
                   --><% }) %><!--   
                 --><% }) %><!--
               --></div>

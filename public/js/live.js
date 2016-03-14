@@ -273,21 +273,31 @@ socket.on('update', function (ev) {
           '</div>' + 
           '<div class="word">' + 
           ev.data.medias.map(function (media) {
-            return media.files.map(function (file) {
-              var size = ' ';
-              if (!file.isThumb) return '';
-              if (file.photoSize && file.photoSize.length === 2) {
-                size = ' width=' + file.photoSize[0] + ' height=' + file.photoSize[1] + ' '
-              }
-              var src = file.contentSrc;
-              if (noWebp && file.MIME === 'image/webp') {
-                src = src + '?convert=png'
-              }
-              var info = " data-role=" + media.role +
-                        " data-media-id=" + media._id +
-                        " data-mime=" + media.MIME + " ";
-              return '<img src="/files/' + src +'" alt="[sticker](media:'+ file.contentSrc +')"' + size + info + '>'
-            }).join('');
+            if (media.role !== 'audio') {
+              return media.files.map(function (file) {
+                var size = ' ';
+                if (!file.isThumb) return '';
+                if (file.photoSize && file.photoSize.length === 2) {
+                  size = ' width=' + file.photoSize[0] + ' height=' + file.photoSize[1] + ' '
+                }
+                var src = file.contentSrc;
+                if (noWebp && file.MIME === 'image/webp') {
+                  src = src + '?convert=png'
+                }
+                var info = " data-role=" + media.role +
+                          " data-media-id=" + media._id +
+                          " data-mime=" + media.MIME + 
+                          " class=\"media media_" + media.role + "\"" +
+                          " ";
+                return '<img src="/files/' + src +'" alt="[sticker](media:'+ file.contentSrc +')"' + size + info + '>'
+              }).join('');
+            } else {
+              return media.files.map(function (file) {
+                return '<audio controls preload="none">' +
+                        '<source src="/files/'+ file.contentSrc + '" type="' + file.MIME + '">'+
+                        '</audio>';
+              }).join('');
+            }
           }).join('') +
           '</div></div>')
       );
