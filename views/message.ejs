@@ -76,7 +76,7 @@
                   %>
                   <div class="media-container">
                     <a href="/files/<%= image.contentSrc %>">
-                      <img class="media" src="/files/<%= image.contentSrc %>">
+                      <img data-mime="<%= image.MIME %>" class="media" src="/files/<%= image.contentSrc %>">
                     </a>
                   </div>
                 <% } else { %>
@@ -167,7 +167,9 @@
       hasWebP().then(function (){
       }, function (e) {
           Array.prototype.slice.call(document.getElementsByTagName('img'), 0).forEach(function(el) {
-             el.src = el.src + '?convert=png'
+              if ($(el).is('img[data-mime="image/webp"]')) {
+                  el.src = el.src + '?convert=png'
+              }
           })
       })
       
