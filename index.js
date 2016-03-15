@@ -97,20 +97,22 @@ router.get('/message/:id/', function(req, res, next) {
   var query = {
     _id : id
   };
-  Message.find(query,function (err, message) {
-    if (err) {
-      res.end(err.toString());
-      return;
-    }
-    if (message.length === 0) {
+  Message
+  .findOne(query)
+  .deepPopulate('medias medias.files')
+  .exec()
+  .then(function (message) {
+    if (!message) {
       res.end('not found');
       return;
     }
     
-    // cache it, it is actully perminent link
     var maxAge = 86400 * 1000;
     if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + (maxAge / 1000));
-    res.render('message', {message : message[0]});
+    res.render('message', {message : message});
+  })
+  .catch(function (err) {
+    res.status(500).end(err.stack ? err.stack : err.toString());
   })
 })
 router.get('/channel/:channel/:date/', function (req, res, next) {

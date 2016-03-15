@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<% var requireMediaConvert = false; %>
 <html lang="en" class="">
   <head>
     <meta charset="utf-8">
@@ -31,7 +32,59 @@
         
             
         <blockquote class="message-wrap">
-          <% if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
+          <% if (message.medias && message.medias.length > 0) { %>
+            <div class="header">
+              <span class="from"><%= message.from %></span>
+              says to 
+              <% if (message.to.search(/#/) === 0) { %>
+                <a href="/channel/<%= message.to.slice(1) %>/<%= 
+                 moment(message.time)
+                .utcOffset(globalConfig.timezone)
+                .locale(globalConfig.locale)
+                .format('YYYY-MM-DD');
+                %>/#<%= message._id %>">
+                  <span class="to"><%= message.to %></span> 
+                </a>
+              <% } else { %>
+                <span class="to"><%= message.to %></span>
+              <% } %>
+            </div>
+            <div class='word'>
+              <% message.medias.forEach(function (media) { %>
+                <% if (media.role === 'audio') { %>
+                  <% media.files.forEach(function (file) { %>
+                    <div class="media-container">
+                      <audio class="media" controls preload="none">
+                        <source src="/files/<%= file.contentSrc %>" type="<%= file.MIME %>">
+                      </audio>
+                    </div>
+                  <% }) %>
+                <% } else if (media.role === 'video') { %>
+                  <%
+                   var thumb = media.files.filter(function (file) {return file.isThumb})[0];
+                   var video = media.files.filter(function (file) {return !file.isThumb})[0];
+                  %>
+                  <div class="media-container">
+                    <video class="media" poster="/files/<%= thumb.contentSrc %>" width ="<%= video.photoSize[0] %>" height="<%= video.photoSize[1] %>" controls>
+                      <source type="<%= video.MIME %>" src="/files/<%= video.contentSrc %>">
+                    </video>
+                  </div>
+                <% } else if (media.role === 'photo' || media.role === 'sticker') { %>
+                  <%
+                   var image = media.files.sort(function(a, b) {return a.photoSize[0] < b.photoSize[0] ? 1 : -1;})[0];
+                   requireMediaConvert = true;
+                  %>
+                  <div class="media-container">
+                    <a href="/files/<%= image.contentSrc %>">
+                      <img class="media" src="/files/<%= image.contentSrc %>">
+                    </a>
+                  </div>
+                <% } else { %>
+                  unsupported media type: <%= media.role %>
+                <% } %>
+              <% }) %>
+            </div>
+          <% } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
             <div class="header">
               <span class="from"><%= message.from %></span>
               says to 
@@ -82,5 +135,43 @@
             
       </div>
     </div>
+    <% if (requireMediaConvert) { %>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+    
+      var hasWebP = (function() {
+          // some small (2x1 px) test images for each feature
+          var images = {
+              basic: "data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAACyAgCdASoCAAEALmk0mk0iIiIiIgBoSygABc6zbAAA/v56QAAAAA==",
+              lossless: "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA="
+          };
+      
+          return function(feature) {
+              var deferred = $.Deferred();
+      
+              $("<img>").on("load", function() {
+                  // the images should have these dimensions
+                  if(this.width === 2 && this.height === 1) {
+                      deferred.resolve();
+                  } else {
+                      deferred.reject();
+                  }
+              }).on("error", function() {
+                  deferred.reject();
+              }).attr("src", images[feature || "basic"]);
+      
+              return deferred.promise();
+          }
+      })();
+      
+      hasWebP().then(function (){
+      }, function (e) {
+          Array.prototype.slice.call(document.getElementsByTagName('img'), 0).forEach(function(el) {
+             el.src = el.src + '?convert=png'
+          })
+      })
+      
+    </script>
+    <% } %>
   </body>
 </html>
