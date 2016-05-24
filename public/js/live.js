@@ -257,8 +257,9 @@ socket.on('update', function (ev) {
   console.log(ev.data);
   if (ev.data.to === channel) {
     var shouldScroll = autoScroll && ($(window).scrollTop() + $(window).height() == $(document).height());
+    var message = null;
     if (ev.data.medias && ev.data.medias.length > 0) {
-      $('#messages').append(
+      message =
         $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
           moment(ev.data.time)
           .utcOffset(config.timezone)
@@ -300,10 +301,9 @@ socket.on('update', function (ev) {
             }
           }).join('') +
           '</div></div>')
-      );
       
     } else if (!ev.data.message.match(/^\u0001ACTION.+\u0001$/i)) {
-      $('#messages').append(
+     message =
         $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
           moment(ev.data.time)
           .utcOffset(config.timezone)
@@ -317,9 +317,8 @@ socket.on('update', function (ev) {
           '</a>' +
           '</div>' + 
           '<div class="word">' + parseColor(safe_tags_replace(ev.data.message)) + '</div></div>')
-      );
     } else {
-      $('#messages').append(
+      message = 
         $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 
           moment(ev.data.time)
           .utcOffset(config.timezone)
@@ -337,8 +336,42 @@ socket.on('update', function (ev) {
           ev.data._id+
           '">' + ev.data.from + '</a> ' +
           parseColor(safe_tags_replace((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(ev.data.message)[1])) + '</div></div>')
-      );
     }
+    
+    if (message) {
+      message.attr('id', ev.data._id);
+      if (config.admin_mode && ev.data.medias && ev.data.medias.length > 0) {
+        message.append(
+          $('<div>')
+          .addClass('admin')
+          .append(
+            $('<a>')
+            .attr('href', 'javascript:void(0)')
+            .addClass('delete-with-media')
+            .text('[delete with media] ')
+          )
+          .append(
+            $('<a>')
+            .attr('href', 'javascript:void(0)')
+            .addClass('delete')
+            .text('[delete] ')
+          )
+        );
+      } else if (config.admin_mode) {
+        message.append(
+          $('<div>')
+          .addClass('admin')
+          .append(
+            $('<a>')
+            .attr('href', 'javascript:void(0)')
+            .addClass('delete')
+            .text('[delete] ')
+          )
+        );
+      }
+      $('#messages').append(message);
+    }
+    
     if (shouldScroll) {
       $("html, body").animate({ scrollTop: $(document).height() }, 500);
     }

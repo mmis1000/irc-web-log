@@ -3,6 +3,8 @@ require('coffee-script/register')
 var http = require('http');
 var path = require('path');
 
+var basicAuth = require('basic-auth-connect');
+var bodyParser = require('body-parser')
 var range = require('express-range');
 var socketio = require('socket.io');
 var express = require('express');
@@ -34,6 +36,7 @@ router.use(range({
   accept: 'bytes',
   limit: 10,
 }));
+router.use(bodyParser.urlencoded({ extended: false }));
 
 router.locals.moment = moment;
 router.locals.globalConfig = config;
@@ -220,7 +223,7 @@ router.get('/files/:id', function (req, res, next) {
         .then(function (path) {
           res.set('Content-Length', '');
           res.set('Content-Type', mime.lookup(path))
-          res.sendfile(path)
+          res.sendFile(path)
         })
         .catch(function (err) {
           res.set('Content-Type', 'text/plain');
@@ -319,6 +322,76 @@ router.get('/api/dump/', function (req, res, next) {
 router.get('/', function (req, res, next) {
   res.render('index', {});
 });
+
+router.post('/api/admin/delete', basicAuth(config['db-manager-account'], config['db-manager-password']), function (req, res, next) {
+  Message.findById(req.body.id)
+  .exec()
+  .then(function (doc) {
+    if (!doc) {
+      return res.status(404).json({error: 'file not found'})
+    }
+    return doc.remove()
+  })
+  .then(function () {
+    res.json({done: true})
+  })
+  .catch(function (err) {
+    return res.status(500).json({error: err.stack || err.toString()})
+  })
+})
+router.post('/api/admin/delete-with-media', basicAuth(config['db-manager-account'], config['db-manager-password']), function (req, res, next) {
+  var docToRemoves = [];
+  Message.findById(req.body.id)
+  .exec()
+  .then(function (doc) {
+    if (!doc) {
+      return res.status(404).json({error: 'file not found'})
+    }
+    docToRemoves.push(doc)
+    return doc;
+  })
+  .then(function (doc) {
+    return Q.all(doc.medias.map(function (id) {
+      return Media.findById(id).exec();
+    }))
+  })
+  .then(function (medias) {
+    docToRemoves = docToRemoves.concat(medias);
+    
+    var fileQuerys = medias.map(function (media) {
+      return media.files.map(function (id) {
+        return File.findById(id).exec();
+      })
+    })
+    fileQuerys = [].concat.apply([], fileQuerys)
+    return Q.all(fileQuerys);
+  })
+  .then(function (files) {
+    docToRemoves = docToRemoves.concat(files);
+    
+    var docToRemovePromise = docToRemoves.map(function (doc) {
+      return doc.remove();
+    })
+    console.log('total model remove: ' + docToRemovePromise.length);
+    
+    var fileToRemovePromise = files
+    .filter(function (file) {
+      return file.contentSource === 'db';
+    })
+    .map(function (file) {
+      return gfs.remove({filename: file.contentSrc})
+    })
+    console.log('total file remove: ' + fileToRemovePromise.length);
+    return Q.all(docToRemovePromise.concat(fileToRemovePromise));
+  })
+  .then(function () {
+    res.json({done: true})
+  })
+  .catch(function (err) {
+    return res.status(500).json({error: err.stack || err.toString()})
+  });
+})
+
 
 var mongo_express = require('mongo-express/lib/middleware');
 var mongo_express_config = require('./mongo_express_config');

@@ -205,6 +205,11 @@ body {
   padding: 0px;
   padding-left: 16px;
 }
+
+.sidebar .item.admin-switch {
+  color: #aaa;
+}
+
 @media only screen and (min-width: 360px) {
   body {
     padding-top: 48px;

@@ -74,6 +74,7 @@ a:hover, a:focus  {
 #messages .message .word audio {
   vertical-align: middle;
 }
+
 @media only screen and (min-width: 600px) {
   #messages .message:nth-child(2n+1) {
     background : transparent;

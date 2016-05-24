@@ -1,0 +1,32 @@
+#messages .message {
+    position: relative;
+}
+#messages .message .admin {
+    display: block;
+    float: left;
+    width: 100%;
+    
+    transition: all 1s;
+    
+    text-align: right;
+}
+
+@media only screen and (min-width: 600px) {
+    #messages .message {
+        position: relative;
+    }
+    #messages .message .admin {
+        float: none;
+        width: auto;
+            
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        
+        opacity: 0;
+        background: transparent;
+    }
+    #messages .message:hover .admin {
+        opacity: 1;
+    }
+}

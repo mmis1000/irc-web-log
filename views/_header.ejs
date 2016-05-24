@@ -72,6 +72,15 @@
     <i class="fa fa-repeat"></i>
     reload
   </a>
+  <% if (query.admin != null) { %>
+    <a class="item admin-switch" href="?">
+      switch to normal mode
+    </a>
+  <% } else { %>
+    <a class="item admin-switch" href="?admin">
+      switch to admin mode
+    </a>
+  <% } %>
 </div>
 <script>
   head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", 

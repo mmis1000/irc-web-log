@@ -24,12 +24,16 @@
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/channel.css" rel="stylesheet" type="text/css" />
+    <% if (query.admin != null ) { %>
+    <link href="/css/channel-admin.css" rel="stylesheet" type="text/css" />
+    <% }%>
     <script>
       var channel = <%- JSON.stringify(channel) %>;
       var config = <%- JSON.stringify({
         locale : globalConfig.locale,
         timezone : globalConfig.timezone,
-        selectedDay :　selectedDay
+        selectedDay :　selectedDay,
+        admin_mode: query.admin != null
       }) %>;
       
       /*! head.load - v1.0.3 */
@@ -86,6 +90,12 @@
                   --><% }) %><!--   
                 --><% }) %><!--
               --></div>
+              <% if (query.admin != null) { %>
+              <div class="admin">
+                <a href="javascript: void(0)" class="delete-with-media">[delete with media]</a>
+                <a href="javascript: void(0)" class="delete">[delete]</a>
+              </div>
+              <% } %>
             </div>
           <% } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
             <div id="<%= message._id %>" class="message">
@@ -101,6 +111,11 @@
                 </a>
               </div>
               <div class="word"><%- parseColor(escapeHTML(message.message))%></div>
+              <% if (query.admin != null) { %>
+              <div class="admin">
+                <a href="javascript: void(0)" class="delete">[delete]</a>
+              </div>
+              <% } %>
             </div>
           <% } else { %>
             <div id="<%= message._id %>" class="message">
@@ -116,6 +131,12 @@
                 </a>
               </div>
               <div class="word"><a href="/message/<%= message._id %>" style="color: <%= getColor(message.from); %>" ><%= message.from %></a> <%- parseColor(escapeHTML((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(message.message)[1]))%></div>
+              <% if (query.admin != null) { %>
+              <div class="admin">
+                <a href="javascript: void(0)">[delete]</a>
+              </div>
+              <% } %>
+              
             </div>
           <% } %>
         <% }); %>
@@ -171,6 +192,9 @@
         "/components/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7",
         "/js/jquery.lazyload.js",
         "/js/channel-common.js",
+    <% if (query.admin != null) {%>
+        "/js/channel-admin.js",
+    <% } %>
     <% if (isToday && query.live !== 'false') { %>
         "/socket.io/socket.io.js", 
         "/js/md5.min.js",                                                                                                            
