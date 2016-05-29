@@ -6,6 +6,10 @@ a:hover, a:focus  {
   text-decoration: underline;
 }
 
+body, html {
+  background: #eee;
+}
+
 .anchor {
   display:block;
   height:0px;
@@ -14,7 +18,7 @@ a:hover, a:focus  {
 
 #messages {
   position:relative;
-  margin:1em;
+  margin: 0.5em;
 }
 #messages .message div {
   /*overflow: hidden;*/
@@ -48,16 +52,17 @@ a:hover, a:focus  {
   -moz-hyphens: auto;
   hyphens: auto;
 }
-#messages .message:nth-child(2n+1) {
-  background : #dddddd;
-}
-
 #messages .head {
   display:none;
 }
 
 #messages .message {
   overflow: hidden;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  background: #fefefe;
+  border-radius: 1px;
+  box-shadow: 0px 1px 1px 1px #ccc;
 }
   
 .media {
@@ -81,6 +86,12 @@ a:hover, a:focus  {
   }
   #messages .message {
     border-bottom: #bbbbbb solid 1px;
+    
+    margin-top: 0em;
+    margin-bottom: 0em;
+    background: transparent;
+    border-radius: 0px;
+    box-shadow: none;
   }
   #messages .message .time {
     min-width:120px;
@@ -96,5 +107,11 @@ a:hover, a:focus  {
     float: none;
     width : auto;
     margin-left : 240px;
+  }
+  #messages {
+    margin: 1em;
+  }
+  body, html {
+    background: #fff;
   }
 }
