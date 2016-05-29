@@ -1,3 +1,4 @@
+/* global $ */
 var noWebp = false;
 function enableWebpConvert() {
   $('img[data-mime="image/webp"]').each(function () {

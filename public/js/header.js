@@ -1,4 +1,4 @@
-/* global Hammer, config, moment */
+/* global Hammer, config, moment, $ */
 function animateTo (pos) {
   if (pos === "#top") {
     $("html, body").stop().animate({ scrollTop: 0 }, 500);
