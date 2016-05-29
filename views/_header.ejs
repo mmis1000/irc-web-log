@@ -41,7 +41,7 @@
         </optgroup>
       <% } %>
       <optgroup label="Other days">
-        <option value="others">尚未完成</option>
+        <option value="others">Selecting...</option>
       </optgroup>
     </select> 
   </div>
@@ -61,7 +61,7 @@
   </button>
 </div>
 
-<div class="overlay">
+<div class="header-overlay">
   
 </div>
 <div class="sidebar">
@@ -82,10 +82,54 @@
     </a>
   <% } %>
 </div>
+
+
+<div class="time-selector-overlay decoration"></div>
+<div class="time-selector-overlay real">
+  <div style="display:table-cell;vertical-align:middle;text-align:center">
+    <div class="time-selector-dialog">
+      <div class="header-group">
+        <span class="input-tag">Jump to...</span>
+      </div>
+      <div class="body-group">
+        <span class="input-wrap">
+          <input type="date" value="<%= moment().utcOffset(globalConfig.timezone).startOf('day').format('YYYY-MM-DD') %>">
+        </span>
+      </div>
+      <div class="footer-group">
+        <button class="cancel">Cancel</button>
+        <button class="confirm">Go</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", 
-    "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js",
-    "//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js",
-    "/js/header.js"
-  ]);
+  function checkDateInput() {
+    var input = document.createElement('input');
+    input.setAttribute('type','date');
+
+    var notADateValue = 'not-a-date';
+    input.setAttribute('value', notADateValue); 
+
+    return (input.value !== notADateValue);
+  }
+  if (checkDateInput()) {
+    head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", 
+      "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js",
+      "//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js",
+      "/js/header.js"
+    ]);
+  } else {
+    head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", 
+      "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js",
+      "//cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.4/hammer.min.js",
+      "/js/header.js",
+      "/css/google-material-icon.css",
+      "/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css",
+      "/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js",
+    ], function () {
+      $(".time-selector-overlay input").bootstrapMaterialDatePicker({ weekStart : 0, time: false });
+    });
+  }
 </script>

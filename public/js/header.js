@@ -22,7 +22,6 @@ if (config.selectedDay !== "today") {
     earlierDays.append(
       dayOption
     );
-    
   }
   
   if (moment(config.selectedDay).utcOffset(config.timezone).add(6, 'days').isBefore(new Date)) {
@@ -62,17 +61,30 @@ $('.date select').change(function () {
       location.href = day + location.search
     }
   } else {
-    alert('尚未完成')
+    // alert('尚未完成')
+    $('.time-selector-overlay')
+    .css({
+      'opacity': 0,
+      'display': 'table'
+    })
+    $('.time-selector-overlay.real')
+    .animate({
+      'opacity': 1
+    }, 500)
+    $('.time-selector-overlay.decoration')
+    .animate({
+      'opacity': 0.5
+    }, 500)
   }
 })
 $('.menu').on('click', function () {
-  $('.overlay').fadeIn(1000);
+  $('.header-overlay').fadeIn(1000);
   $('.sidebar').addClass('show');
 })
 
-$('.overlay').on('click', function (ev) {
-  if ( $(ev.target).is('.overlay') ) {
-  $('.overlay').fadeOut(1000);
+$('.header-overlay').on('click', function (ev) {
+  if ( $(ev.target).is('.header-overlay') ) {
+  $('.header-overlay').fadeOut(1000);
   $('.sidebar').removeClass('show');
 }
 })
@@ -92,7 +104,7 @@ var hammerSidebar = new Hammer($('.sidebar').get(0),  {
 });
 hammerSidebar.on('swipeleft', function () {
   clearSelection();
-  $('.overlay').fadeOut(1000);
+  $('.header-overlay').fadeOut(1000);
   $('.sidebar').removeClass('show');
 })
 
@@ -101,8 +113,32 @@ var hammerMain = new Hammer($('#messages').get(0),  {
     userSelect: true
   }
 });
+
 hammerMain.on('swiperight', function () {
   clearSelection();
-  $('.overlay').fadeIn(1000);
+  $('.header-overlay').fadeIn(1000);
   $('.sidebar').addClass('show');
 })
+
+$('.time-selector-overlay').on('click', function(ev) {
+  console.log($(this));
+  if ($(ev.target).is('.time-selector-overlay, .time-selector-overlay > div, .cancel')) {
+    $('.time-selector-overlay').animate({
+      'opacity': 0
+    }, 1000, 'swing', function () {
+      $('.time-selector-overlay').hide();
+      $('.date select').val(config.selectedDay);
+    })
+  }
+  if ($(ev.target).is('.confirm')) {
+    var day = $(this).find('input').val();
+    if (location.pathname.search(/\/$/) !== -1) {
+      location.href = '../' + day + location.search
+    } else {
+      location.href = day + location.search
+    }
+  }
+})
+
+// to prevent form cache
+$('.date select').val(config.selectedDay);
