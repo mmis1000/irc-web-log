@@ -1,4 +1,5 @@
 /* global Hammer, config, moment, $ */
+
 function animateTo (pos) {
   if (pos === "#top") {
     $("html, body").stop().animate({ scrollTop: 0 }, 500);
@@ -10,6 +11,7 @@ function animateTo (pos) {
     }
   }
 }
+
 if (config.selectedDay !== "today") {
   var earlierDays = $("#earlier");
   //console.log(otherDay);
@@ -34,9 +36,6 @@ if (config.selectedDay !== "today") {
   
   $(".date-select").val(config.selectedDay);
 }
-
-
-
 
 var androidVersion = (/Android\s(\d\S*)/i).exec(navigator.userAgent);
 var supportsWebSockets = 'WebSocket' in window || 'MozWebSocket' in window;

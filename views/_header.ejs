@@ -1,6 +1,9 @@
 
+<% if (query.packed === "0") { %>
 <link href="/css/header.css" rel="stylesheet" type="text/css" />
 <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<% } %>
+
 <div class="header">
   <button class="button menu" title="show menu">
     <i class="fa fa-bars"></i>
@@ -103,7 +106,7 @@
     </div>
   </div>
 </div>
-
+<% if (query.packed === "0") { %>
 <script>
   function checkDateInput() {
     var input = document.createElement('input');
@@ -132,4 +135,5 @@
       $(".time-selector-overlay input").bootstrapMaterialDatePicker({ weekStart : 0, time: false });
     });
   }
+<% } %>
 </script>

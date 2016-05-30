@@ -290,7 +290,7 @@ body {
 
 /* override dtp to ensure datepicker is on top */
 .dtp {
-  z-index: 999999;
+  z-index: 999999 !important;
 }
 @media only screen and (min-width: 360px) {
   body {

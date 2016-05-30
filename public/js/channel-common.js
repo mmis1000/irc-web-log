@@ -1,5 +1,7 @@
 /* global $ */
 var noWebp = false;
+window.noWebp = noWebp;
+
 function enableWebpConvert() {
   $('img[data-mime="image/webp"]').each(function () {
     var src = $(this).attr('data-original');
@@ -105,7 +107,7 @@ var hasWebP = (function() {
 hasWebP().then(function (){
   loadLazy();
 }, function (e) {
-  noWebp = true;
+  window.noWebp = noWebp = true;
   enableWebpConvert();
   loadLazy();
 })
