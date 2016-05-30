@@ -60,9 +60,9 @@ module.exports = {
             
             { test: /\.eot/, loader: 'url-loader?limit=10000&mimetype=application/vnd.ms-fontobject' },
             { test: /\.woff2(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff2' },
-            { test: /\.woff/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
-            { test: /\.ttf/, loader: 'url-loader?limit=10000&mimetype=application/font-ttf' },
-            { test: /\.svg/, loader: 'url-loader?limit=10000&mimetype=image/svg+xml' },
+            { test: /\.woff(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
+            { test: /\.ttf(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-ttf' },
+            { test: /\.svg(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=image/svg+xml' },
             { test: /\.png$|\.jpg$|\.webp$|\.gif/, loader: 'file-loader' }
         ]
     },
