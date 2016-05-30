@@ -94,6 +94,22 @@ function onDbConnect(err, cb) {
 
 router.set('views', path.resolve(__dirname, 'views'));
 router.set('view engine', 'ejs');
+
+if (config["minify-html"]) {
+  var minifyHTML = require('express-minify-html');
+  router.use(minifyHTML({
+    override:      true,
+    htmlMinifier: {
+      removeComments:            true,
+      collapseWhitespace:        true,
+      collapseBooleanAttributes: true,
+      removeAttributeQuotes:     true,
+      removeEmptyAttributes:     true,
+      minifyJS:                  false
+    }
+}));
+}
+
 router.get('/message/:id/', function(req, res, next) {
 
   var id = mongoose.Types.ObjectId(req.params.id);
@@ -163,6 +179,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       var maxAge = 86400 * 1000;
       if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + (maxAge / 1000));
     }
+    var time = Date.now();
     res.render('channel', {
       messages : messages, 
       channel : channel, 
@@ -170,6 +187,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       selectedDay : req.params.date,
       query : req.query
     });
+    console.log('done render ' + channel + '/' + req.params.date + ' using ' + (Date.now() - time) + ' ms')
   })
 
 })
