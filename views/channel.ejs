@@ -74,7 +74,7 @@
             stylesheet.type = 'text/css';
             document.getElementsByTagName('head')[0].appendChild(stylesheet);
       </script>
-      <script defer src="/packed/channel-common-with-live.entry.js"></script>
+      <script defer async src="/packed/channel-common-with-live.entry.js"></script>
     <% } else { %>
       <script type="text/javascript">
             var stylesheet = document.createElement('link');
@@ -83,7 +83,7 @@
             stylesheet.type = 'text/css';
             document.getElementsByTagName('head')[0].appendChild(stylesheet);
       </script>
-      <script defer src="/packed/channel-common.entry.js"></script>
+      <script defer async src="/packed/channel-common.entry.js"></script>
     <% } %>
 <% } %>
 
