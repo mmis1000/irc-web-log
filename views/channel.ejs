@@ -5,10 +5,7 @@
     <title>Log | <%= channel -%></title>
     <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="Log for <%= channel -%>">
-    <!--
-    <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
-    <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
-    -->
+    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
@@ -16,10 +13,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta property="og:title" content="<%= channel -%>" />
     <meta property="og:type" content="website" />
-    <!--
-    <meta property="og:url" content="http://jsbin.com/" />
-    <meta property="og:image" content="http://jsbin.com/favicon.ico" />
-    -->
     <!-- end of SEO area -->
 
 <%_ if (query.packed === "0") { -%>
@@ -48,14 +41,12 @@
     </script>
 <%_ if (query.packed !== "0") { -%>
     <%_ if (query.admin != null) { -%>
-      <!-- <link href="/packed/channel-light-admin.css" rel="stylesheet" type="text/css" /> -->
       <%_ if (true) { -%>
       <style>
         <%_ include ../public/packed/channel-light-admin.css -%>
       </style>
       <%_ } -%>
     <%_ } else { -%>
-      <!-- <link href="/packed/channel-light.css" rel="stylesheet" type="text/css" /> -->
       <%_ if (true) { -%>
       <style>
         <%_ include ../public/packed/channel-light.css -%>
