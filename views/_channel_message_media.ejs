@@ -1,0 +1,40 @@
+<div id="<%= message._id -%>" class="message">
+  <div class="time"><a href="#<%= message._id -%>"><%= 
+    moment(message.time)
+    .utcOffset(globalConfig.timezone)
+    .locale(globalConfig.locale) 
+    .format('a hh:mm:ss')
+  -%></a></div>
+  <div class="from">
+    <a style="color: <%= getColor(message.from); -%>" href="/message/<%= message._id -%>">
+      <%= message.from -%>
+    </a>
+  </div>
+  <div class="word"><%
+           message.medias.forEach(function (media) {  
+             media.files.forEach(function (file) {
+               if (media.role !== 'audio') { 
+                 if (!file.isThumb) {return}
+          -%><img class="lazy media media_<%= media.role -%>" data-original="/files/<%= file.contentSrc -%>" 
+              <%_ if (file.photoSize && file.photoSize.length === 2 ) { -%>
+              width=<%= file.photoSize[0] -%> height=<%= file.photoSize[1] -%>
+              <%_ } -%> 
+              data-role="<%= media.role -%>"
+              data-media-id="<%= media._id -%>"
+              data-mime="<%= file.MIME -%>"
+              alt="[<%= media.role -%>](media:<%= file.contentSrc -%>)"><%
+                  } else {
+          -%><audio controls preload="none">
+              <source src="/files/<%= file.contentSrc -%>" type="<%= file.MIME -%>">
+            </audio><%
+              } 
+            })  
+          })
+  -%></div>
+  <%_ if (query.admin != null) { -%>
+  <div class="admin">
+    <a href="javascript: void(0)" class="delete-with-media">[delete with media]</a>
+    <a href="javascript: void(0)" class="delete">[delete]</a>
+  </div>
+  <%_ } -%>
+</div>

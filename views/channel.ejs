@@ -2,9 +2,9 @@
 <html lang="en" class="">
   <head>
     <meta charset="utf-8">
-    <title>Log | <%= channel %></title>
+    <title>Log | <%= channel -%></title>
     <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="description" content="Log for <%= channel %>">
+    <meta name="description" content="Log for <%= channel -%>">
     <!--
     <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
     <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
@@ -14,7 +14,7 @@
     
     <!-- start of SEO area -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta property="og:title" content="<%= channel %>" />
+    <meta property="og:title" content="<%= channel -%>" />
     <meta property="og:type" content="website" />
     <!--
     <meta property="og:url" content="http://jsbin.com/" />
@@ -22,165 +22,99 @@
     -->
     <!-- end of SEO area -->
 
-<% if (query.packed === "0") { %>
+<%_ if (query.packed === "0") { -%>
     <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/channel.css" rel="stylesheet" type="text/css" />
-    <% if (query.admin != null ) { %>
+    <%_ if (query.admin != null ) { _%>
     <link href="/css/channel-admin.css" rel="stylesheet" type="text/css" />
-    <% }%>
-<% } %>
+    <%_ } -%>
+<%_ } -%>
     <script>
-      var channel = <%- JSON.stringify(channel) %>;
+      var channel = <%- JSON.stringify(channel) -%>;
       var config = <%- JSON.stringify({
         locale : globalConfig.locale,
         timezone : globalConfig.timezone,
         selectedDay :　selectedDay,
         admin_mode: query.admin != null
-      }) %>;
+      }) -%>;
 
-<% if (query.packed === "0") { %>
+<%_ if (query.packed === "0") { -%>
       /*! head.load - v1.0.3 */
       (function(n,t){"use strict";function w(){}function u(n,t){if(n){typeof n=="object"&&(n=[].slice.call(n));for(var i=0,r=n.length;i<r;i++)t.call(n,n[i],i)}}function it(n,i){var r=Object.prototype.toString.call(i).slice(8,-1);return i!==t&&i!==null&&r===n}function s(n){return it("Function",n)}function a(n){return it("Array",n)}function et(n){var i=n.split("/"),t=i[i.length-1],r=t.indexOf("?");return r!==-1?t.substring(0,r):t}function f(n){(n=n||w,n._done)||(n(),n._done=1)}function ot(n,t,r,u){var f=typeof n=="object"?n:{test:n,success:!t?!1:a(t)?t:[t],failure:!r?!1:a(r)?r:[r],callback:u||w},e=!!f.test;return e&&!!f.success?(f.success.push(f.callback),i.load.apply(null,f.success)):e||!f.failure?u():(f.failure.push(f.callback),i.load.apply(null,f.failure)),i}function v(n){var t={},i,r;if(typeof n=="object")for(i in n)!n[i]||(t={name:i,url:n[i]});else t={name:et(n),url:n};return(r=c[t.name],r&&r.url===t.url)?r:(c[t.name]=t,t)}function y(n){n=n||c;for(var t in n)if(n.hasOwnProperty(t)&&n[t].state!==l)return!1;return!0}function st(n){n.state=ft;u(n.onpreload,function(n){n.call()})}function ht(n){n.state===t&&(n.state=nt,n.onpreload=[],rt({url:n.url,type:"cache"},function(){st(n)}))}function ct(){var n=arguments,t=n[n.length-1],r=[].slice.call(n,1),f=r[0];return(s(t)||(t=null),a(n[0]))?(n[0].push(t),i.load.apply(null,n[0]),i):(f?(u(r,function(n){s(n)||!n||ht(v(n))}),b(v(n[0]),s(f)?f:function(){i.load.apply(null,r)})):b(v(n[0])),i)}function lt(){var n=arguments,t=n[n.length-1],r={};return(s(t)||(t=null),a(n[0]))?(n[0].push(t),i.load.apply(null,n[0]),i):(u(n,function(n){n!==t&&(n=v(n),r[n.name]=n)}),u(n,function(n){n!==t&&(n=v(n),b(n,function(){y(r)&&f(t)}))}),i)}function b(n,t){if(t=t||w,n.state===l){t();return}if(n.state===tt){i.ready(n.name,t);return}if(n.state===nt){n.onpreload.push(function(){b(n,t)});return}n.state=tt;rt(n,function(){n.state=l;t();u(h[n.name],function(n){f(n)});o&&y()&&u(h.ALL,function(n){f(n)})})}function at(n){n=n||"";var t=n.split("?")[0].split(".");return t[t.length-1].toLowerCase()}function rt(t,i){function e(t){t=t||n.event;u.onload=u.onreadystatechange=u.onerror=null;i()}function o(f){f=f||n.event;(f.type==="load"||/loaded|complete/.test(u.readyState)&&(!r.documentMode||r.documentMode<9))&&(n.clearTimeout(t.errorTimeout),n.clearTimeout(t.cssTimeout),u.onload=u.onreadystatechange=u.onerror=null,i())}function s(){if(t.state!==l&&t.cssRetries<=20){for(var i=0,f=r.styleSheets.length;i<f;i++)if(r.styleSheets[i].href===u.href){o({type:"load"});return}t.cssRetries++;t.cssTimeout=n.setTimeout(s,250)}}var u,h,f;i=i||w;h=at(t.url);h==="css"?(u=r.createElement("link"),u.type="text/"+(t.type||"css"),u.rel="stylesheet",u.href=t.url,t.cssRetries=0,t.cssTimeout=n.setTimeout(s,500)):(u=r.createElement("script"),u.type="text/"+(t.type||"javascript"),u.src=t.url);u.onload=u.onreadystatechange=o;u.onerror=e;u.async=!1;u.defer=!1;t.errorTimeout=n.setTimeout(function(){e({type:"timeout"})},7e3);f=r.head||r.getElementsByTagName("head")[0];f.insertBefore(u,f.lastChild)}function vt(){for(var t,u=r.getElementsByTagName("script"),n=0,f=u.length;n<f;n++)if(t=u[n].getAttribute("data-headjs-load"),!!t){i.load(t);return}}function yt(n,t){var v,p,e;return n===r?(o?f(t):d.push(t),i):(s(n)&&(t=n,n="ALL"),a(n))?(v={},u(n,function(n){v[n]=c[n];i.ready(n,function(){y(v)&&f(t)})}),i):typeof n!="string"||!s(t)?i:(p=c[n],p&&p.state===l||n==="ALL"&&y()&&o)?(f(t),i):(e=h[n],e?e.push(t):e=h[n]=[t],i)}function e(){if(!r.body){n.clearTimeout(i.readyTimeout);i.readyTimeout=n.setTimeout(e,50);return}o||(o=!0,vt(),u(d,function(n){f(n)}))}function k(){r.addEventListener?(r.removeEventListener("DOMContentLoaded",k,!1),e()):r.readyState==="complete"&&(r.detachEvent("onreadystatechange",k),e())}var r=n.document,d=[],h={},c={},ut="async"in r.createElement("script")||"MozAppearance"in r.documentElement.style||n.opera,o,g=n.head_conf&&n.head_conf.head||"head",i=n[g]=n[g]||function(){i.ready.apply(null,arguments)},nt=1,ft=2,tt=3,l=4,p;if(r.readyState==="complete")e();else if(r.addEventListener)r.addEventListener("DOMContentLoaded",k,!1),n.addEventListener("load",e,!1);else{r.attachEvent("onreadystatechange",k);n.attachEvent("onload",e);p=!1;try{p=!n.frameElement&&r.documentElement}catch(wt){}p&&p.doScroll&&function pt(){if(!o){try{p.doScroll("left")}catch(t){n.clearTimeout(i.readyTimeout);i.readyTimeout=n.setTimeout(pt,50);return}e()}}()}i.load=i.js=ut?lt:ct;i.test=ot;i.ready=yt;i.ready(r,function(){y()&&u(h.ALL,function(n){f(n)});i.feature&&i.feature("domloaded",!0)})})(window);
       /*
       //# sourceMappingURL=head.load.min.js.map
       */
-<% } %>
+<%_ } -%>
     </script>
-    
-<% if (query.packed !== "0") { %>
-
-    <% if (query.admin != null) { %>
-      <link href="/packed/channel-light-admin.css" rel="stylesheet" type="text/css" />
-    <% } else {%>
-      <link href="/packed/channel-light.css" rel="stylesheet" type="text/css" />
-    <% } %>
-    
-<% } %>
+<%_ if (query.packed !== "0") { -%>
+    <%_ if (query.admin != null) { -%>
+      <!-- <link href="/packed/channel-light-admin.css" rel="stylesheet" type="text/css" /> -->
+      <%_ if (true) { -%>
+      <style>
+        <%_ include ../public/packed/channel-light-admin.css -%>
+      </style>
+      <%_ } -%>
+    <%_ } else { -%>
+      <!-- <link href="/packed/channel-light.css" rel="stylesheet" type="text/css" /> -->
+      <%_ if (true) { -%>
+      <style>
+        <%_ include ../public/packed/channel-light.css -%>
+      </style>
+      <%_ } -%>
+    <%_ } -%>
+<%_ } -%>
 
   </head>
   <body>
-    
-    <% include _header.ejs %>
-    
+    <%_ include _header.ejs -%>
     <div class="anchor" id="top"></div>
     <div id="messages">
-
-<% if (query.packed !== "0") { %>
-    <% if (isToday && query.live !== 'false') { %>
+<%_ if (query.packed !== "0") { -%>
+    <%_ if (isToday && query.live !== 'false') { -%>
       <script type="text/javascript">
             var stylesheet = document.createElement('link');
             stylesheet.href = '/packed/channel-common-with-live.css';
             stylesheet.rel = 'stylesheet';
             stylesheet.type = 'text/css';
-            document.getElementsByTagName('head')[0].appendChild(stylesheet);
+            var wait = window.requestAnimationFrame || window.setImmediate || function (fn) {return setTimeout(fn, 0)}
+            wait(function () {
+              document.getElementsByTagName('head')[0].appendChild(stylesheet);
+            })
       </script>
       <script defer async src="/packed/channel-common-with-live.entry.js"></script>
-    <% } else { %>
+    <%_ } else { -%>
       <script type="text/javascript">
             var stylesheet = document.createElement('link');
             stylesheet.href = '/packed/channel-common.css';
             stylesheet.rel = 'stylesheet';
             stylesheet.type = 'text/css';
-            document.getElementsByTagName('head')[0].appendChild(stylesheet);
+            var wait = window.requestAnimationFrame || window.setImmediate || function (fn) {return setTimeout(fn, 0)}
+            wait(function () {
+              document.getElementsByTagName('head')[0].appendChild(stylesheet);
+            })
       </script>
       <script defer async src="/packed/channel-common.entry.js"></script>
-    <% } %>
-<% } %>
+    <%_ } -%>
+<%_ } -%>
 
         <div class="message head">
           <div class="time">time</div>
           <div class="from">from</div>
           <div class="word">message</div>
         </div> 
-        <% messages.forEach(function(message) { %>
-          <% if (message.medias && message.medias.length > 0) { %>
-            <div id="<%= message._id %>" class="message">
-              <div class="time"><a href="#<%= message._id %>"><%= 
-                moment(message.time)
-                .utcOffset(globalConfig.timezone)
-                .locale(globalConfig.locale) 
-                .format('a hh:mm:ss')
-              %></a></div>
-              <div class="from">
-                <a style="color: <%= getColor(message.from); %>" href="/message/<%= message._id %>">
-                  <%= message.from %>
-                </a>
-              </div>
-              <div class="word"><!--
-                --><% message.medias.forEach(function (media) { %><!--
-                  --><% media.files.forEach(function (file) { %><!--
-                    --><% if (media.role !== 'audio') { %><!--
-                      --><% if (!file.isThumb) {return} %><!--
-                      --><img class="lazy media media_<%= media.role %>" data-original="/files/<%= file.contentSrc %>" 
-                          <% if (file.photoSize && file.photoSize.length === 2 ) { %>
-                          width=<%= file.photoSize[0] %> height=<%= file.photoSize[1] %>
-                          <% } %> 
-                          data-role="<%= media.role %>"
-                          data-media-id="<%= media._id %>"
-                          data-mime="<%= file.MIME %>"
-                          alt="[<%= media.role %>](media:<%= file.contentSrc %>)"><!--
-                    --><% } else { %><!--
-                      --><audio controls preload="none">
-                          <source src="/files/<%= file.contentSrc %>" type="<%= file.MIME %>">
-                        </audio><!--
-                    --><% } %><!--
-                  --><% }) %><!--   
-                --><% }) %><!--
-              --></div>
-              <% if (query.admin != null) { %>
-              <div class="admin">
-                <a href="javascript: void(0)" class="delete-with-media">[delete with media]</a>
-                <a href="javascript: void(0)" class="delete">[delete]</a>
-              </div>
-              <% } %>
-            </div>
-          <% } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
-            <div id="<%= message._id %>" class="message">
-              <div class="time"><a href="#<%= message._id %>"><%= 
-                moment(message.time)
-                .utcOffset(globalConfig.timezone)
-                .locale(globalConfig.locale) 
-                .format('a hh:mm:ss')
-              %></a></div>
-              <div class="from">
-                <a style="color: <%= getColor(message.from); %>" href="/message/<%= message._id %>">
-                  <%= message.from %>
-                </a>
-              </div>
-              <div class="word"><%- parseColor(escapeHTML(message.message))%></div>
-              <% if (query.admin != null) { %>
-              <div class="admin">
-                <a href="javascript: void(0)" class="delete">[delete]</a>
-              </div>
-              <% } %>
-            </div>
-          <% } else { %>
-            <div id="<%= message._id %>" class="message">
-              <div class="time"><a href="#<%= message._id %>"><%= 
-                moment(message.time)
-                .utcOffset(globalConfig.timezone)
-                .locale(globalConfig.locale) 
-                .format('a hh:mm:ss')
-              %></a></div>
-              <div class="from">
-                <a href="/message/<%= message._id %>">
-                  *
-                </a>
-              </div>
-              <div class="word"><a href="/message/<%= message._id %>" style="color: <%= getColor(message.from); %>" ><%= message.from %></a> <%- parseColor(escapeHTML((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(message.message)[1]))%></div>
-              <% if (query.admin != null) { %>
-              <div class="admin">
-                <a href="javascript: void(0)">[delete]</a>
-              </div>
-              <% } %>
-              
-            </div>
-          <% } %>
-        <% }); %>
+        <%_ messages.forEach(function(message) { -%>
+          <%_ if (message.medias && message.medias.length > 0) { -%>
+            <%_ include _channel_message_media.ejs _%>
+          <%_ } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { -%>
+            <%_ include _channel_message.ejs _%>
+          <%_ } else { -%>
+            <%_ include _channel_message_action.ejs _%>
+          <%_ } -%>
+        <%_ }); -%>
     </div>
     <div class="anchor" id="bottom"></div>
     
-<% if (query.packed === "0") { %>
+<%_ if (query.packed === "0") { -%>
 
     <script>
       head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"], function () {
@@ -232,18 +166,18 @@
         "/components/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7",
         "/js/jquery.lazyload.js",
         "/js/channel-common.js",
-    <% if (query.admin != null) {%>
+    <%_ if (query.admin != null) { -%>
         "/js/channel-admin.js",
-    <% } %>
-    <% if (isToday && query.live !== 'false') { %>
+    <%_ } -%>
+    <%_ if (isToday && query.live !== 'false') { -%>
         "/socket.io/socket.io.js", 
         "/js/md5.min.js",                                                                                                            
         "/js/live.js"
-    <% } %>
+    <%_ } -%>
       ]);
     </script>
     
-<% } %>
+<%_ } -%>
 
   </body>
 </html>
