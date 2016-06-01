@@ -92,6 +92,16 @@ function onDbConnect(err, cb) {
   });
 }
 
+/* [start] inject some opt to ejs */
+;(function () {
+  var ejs = require("ejs");
+  var old__express = ejs.__express;
+  ejs.__express = function (path, data, cb) {
+    return old__express.call(this, path, data, {rmWhitespace: true}, cb);
+  }
+} ());
+/* [ end ] inject some opt to ejs  */
+
 router.set('views', path.resolve(__dirname, 'views'));
 router.set('view engine', 'ejs');
 
