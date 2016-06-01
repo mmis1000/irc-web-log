@@ -32,7 +32,8 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, "public/packed"),
-        filename: "[name].entry.js"
+        filename: "[name].entry.js",
+        publicPath: "/packed/"
     },
     module: {
         loaders: [
