@@ -22,12 +22,14 @@ module.exports = {
         ],
         "channel-common": [
             "imports?fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,$=jquery,lazyload!./public/js/channel-common.js", 
-            "imports?Hammer=hammerjs,google_material_icon,moment,polyfill_datepicker,$=jquery,lazyload!./public/js/header.js"
+            "imports?Hammer=hammerjs,google_material_icon,moment,polyfill_datepicker,$=jquery,lazyload!./public/js/header.js",
+            "./public/js/scroll-fix.js"
         ],
         "channel-common-with-live": [
             "imports?fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,$=jquery,lazyload!./public/js/channel-common.js", 
             "imports?Hammer=hammerjs,google_material_icon,moment,polyfill_datepicker,$=jquery,lazyload!./public/js/header.js", 
-            "imports?moment,$=jquery,io=socket_io,md5!./public/js/live.js"
+            "imports?moment,$=jquery,io=socket_io,md5!./public/js/live.js",
+            "./public/js/scroll-fix.js"
         ]
     },
     output: {
