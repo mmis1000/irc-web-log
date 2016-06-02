@@ -21,7 +21,7 @@ body {
   height:40px;
   background:#448866;
   
-  box-shadow: 0px 0px 4px 2px #444444;
+  box-shadow: 0px 0px 4px 2px #666;
   z-index: 99;
 }
 
@@ -287,23 +287,41 @@ body {
   color: #4c4;
 }
 
-
+.time-selector-overlay.jump {
+  background: #fff;
+  background: rgba(64, 64, 64, 0.7);
+}
+.jump-text {
+  width: 300px;
+  height: 100px;
+  display: inline-block;
+  background: #fff;
+  box-shadow: 0px 0px 4px 2px #444444;
+  box-sizing: border-box;
+  
+  line-height: 100px;
+  text-align: center;
+  font-size: 1.5em;
+}
+.jump-text i {
+  vertical-align: middle;
+}
 /* override dtp to ensure datepicker is on top */
 .dtp {
   z-index: 999999 !important;
 }
 @media only screen and (min-width: 360px) {
   body {
-    padding-top: 48px;
+    padding-top: 56px;
   }
   .header {
-    height:48px;
+    height: 56px;
   }
   
   
   .buttom-nav body {
     padding-top: 0px;
-    padding-bottom: 48px;
+    padding-bottom: 56px;
   }
   
   .buttom-nav .header {
@@ -312,15 +330,15 @@ body {
   }
     
   .date {
-    height:36px;
-    line-height:36px;
-    margin:6px;
+    height: 44px;
+    line-height: 44px;
+    margin: 6px;
   }
   .button {
-    height:48px;
-    width:48px;
-    margin:0px;
-    line-height:48px;
+    height: 56px;
+    width: 44px;
+    margin: 0px;
+    line-height: 56px;
     font-size:20px;
   }
   
@@ -337,9 +355,29 @@ body {
 }
 
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 600px), (orientation: landscape) {
   .button:hover {
     background:#55aa77;
     /*box-shadow: 0px 2px 2px 0px #666666;*/
+  }
+  
+  /* make nav less higher on desktop layout */
+  body {
+    padding-top: 48px;
+  }
+  .header {
+    height: 48px;
+  }
+  .buttom-nav body {
+    padding-bottom: 48px;
+  }
+  .date {
+    height: 36px;
+    line-height: 36px;
+  }
+  .button {
+    height: 48px;
+    width: 48px;
+    line-height: 48px;
   }
 }

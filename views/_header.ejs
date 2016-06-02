@@ -91,13 +91,28 @@
       </div>
       <div class="body-group">
         <span class="input-wrap">
-          <input type="date" value="<%= moment().utcOffset(globalConfig.timezone).startOf('day').format('YYYY-MM-DD') %>">
+          <input 
+          type="date" 
+          <%_ if (selectedDay === 'today') { -%>
+          value="<%= moment().utcOffset(globalConfig.timezone).startOf('day').format('YYYY-MM-DD') -%>"
+          <%_ } else { -%>
+          value="<%= selectedDay -%>"
+          <%_ } -%>
+          max="<%= moment().utcOffset(globalConfig.timezone).startOf('day').format('YYYY-MM-DD') %>">
         </span>
       </div>
       <div class="footer-group">
         <button class="cancel">Cancel</button>
         <button class="confirm">Go</button>
       </div>
+    </div>
+  </div>
+</div>
+<div class="time-selector-overlay jump">
+  <div style="display:table-cell;vertical-align:middle;text-align:center">
+    <div class="jump-text">
+      <i class="fa fa-refresh fa-spin fa-2x"></i>
+      redirecting...
     </div>
   </div>
 </div>

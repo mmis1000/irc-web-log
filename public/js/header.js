@@ -61,7 +61,7 @@ $('.date select').change(function () {
     }
   } else {
     // alert('尚未完成')
-    $('.time-selector-overlay')
+    $('.time-selector-overlay.real, .time-selector-overlay.decoration')
     .css({
       'opacity': 0,
       'display': 'table'
@@ -119,24 +119,23 @@ hammerMain.on('swiperight', function () {
   $('.sidebar').addClass('show');
 })
 
-$('.time-selector-overlay').on('click', function(ev) {
+$('.time-selector-overlay.decoration, .time-selector-overlay.real').on('click tap', function(ev) {
   console.log($(this));
-  if ($(ev.target).is('.time-selector-overlay, .time-selector-overlay > div, .cancel')) {
-    $('.time-selector-overlay').animate({
+  if ($(ev.target).is('.time-selector-overlay.decoration, .time-selector-overlay.real, .time-selector-overlay > div, .cancel')) {
+    $('.time-selector-overlay.decoration, .time-selector-overlay.real').animate({
       'opacity': 0
     }, 1000, 'swing', function () {
-      $('.time-selector-overlay').hide();
+      $('.time-selector-overlay.decoration, .time-selector-overlay.real').hide();
       $('.date select').val(config.selectedDay);
     })
   }
-  if ($(ev.target).is('.confirm')) {
-    var day = $(this).find('input').val();
-    if (location.pathname.search(/\/$/) !== -1) {
-      location.href = '../' + day + location.search
-    } else {
-      location.href = day + location.search
-    }
-  }
+})
+$('.time-selector-overlay.real .confirm').on('click tap', function(ev) {
+  var day = $('.time-selector-overlay.real').find('input').val();
+  location.href = location.pathname.replace(/[^\/]+\/?$/, '') + day + location.search;
+  $('.time-selector-overlay').hide();
+  $('.time-selector-overlay.jump').css('display', 'table');
+  // alert('redirecting...')
 })
 
 // to prevent form cache
