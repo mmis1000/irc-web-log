@@ -14,7 +14,15 @@
     <meta property="og:title" content="<%= channel -%>" />
     <meta property="og:type" content="website" />
     <!-- end of SEO area -->
-
+    
+    <!-- Chrome, Firefox OS and Opera -->
+    <meta name="theme-color" content="#50BF70">
+    <!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#50BF70">
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
 <%_ if (query.packed === "0") { -%>
     <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/channel.css" rel="stylesheet" type="text/css" />
