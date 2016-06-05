@@ -40,7 +40,7 @@
                 <a href="/channel/<%= message.to.slice(1) %>/<%= 
                  moment(message.time)
                 .utcOffset(globalConfig.timezone)
-                .locale(globalConfig.locale)
+                // .locale(globalConfig.locale)
                 .format('YYYY-MM-DD');
                 %>/#<%= message._id %>">
                   <span class="to"><%= message.to %></span> 
