@@ -139,7 +139,7 @@ router.get('/message/:id/', function(req, res, next) {
   .exec()
   .then(function (message) {
     if (!message) {
-      res.end('not found');
+      res.status(404).end('not found');
       return;
     }
     
@@ -160,7 +160,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   }
   
   if (!req.params.date.match(/^\d\d\d\d-\d\d-\d\d$/) && req.params.date !== 'today') {
-    res.end('unknown date: ' + req.params.date);
+    res.status(404).end('unknown date: ' + req.params.date);
     return;
   }
   var isToday = false;
