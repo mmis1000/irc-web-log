@@ -1,8 +1,14 @@
+<%_
+  if (typeof debug !== 'undefined' && debug === true) {
+    totalMedia += 1;
+    mesureStart();
+  }
+-%>
 <div id="<%= message._id -%>" class="message">
   <div class="time"><a href="#<%= message._id -%>"><%= 
     moment(message.time)
     .utcOffset(globalConfig.timezone)
-    .locale(globalConfig.locale) 
+    // .locale(globalConfig.locale) 
     .format('a hh:mm:ss')
   -%></a></div>
   <div class="from">
@@ -40,3 +46,8 @@
   </div>
   <%_ } -%>
 </div>
+<%_
+  if (typeof debug !== 'undefined' && debug === true) {
+    totalMediaTime += mesure();
+  }
+-%>

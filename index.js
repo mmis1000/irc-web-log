@@ -39,6 +39,7 @@ router.use(range({
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.locals.moment = moment;
+
 router.locals.globalConfig = config;
 router.locals.escapeHTML = require("./lib/escape_html.js");
 router.locals.parseColor = require("./lib/parse_irc_color.js");
@@ -121,6 +122,12 @@ if (config["minify-html"]) {
 }
 
 router.get('/message/:id/', function(req, res, next) {
+  // set moment locale here for performence
+  try {
+    moment.locale(req.query.locale || config.locale);
+  } catch (e) {
+    console.error(e.stack || e.message || e.toString());
+  }
 
   var id = mongoose.Types.ObjectId(req.params.id);
   var query = {
@@ -145,6 +152,13 @@ router.get('/message/:id/', function(req, res, next) {
   })
 })
 router.get('/channel/:channel/:date/', function (req, res, next) {
+  // set moment locale here for performence
+  try {
+    moment.locale(req.query.locale || config.locale);
+  } catch (e) {
+    console.error(e.stack || e.message || e.toString());
+  }
+  
   if (!req.params.date.match(/^\d\d\d\d-\d\d-\d\d$/) && req.params.date !== 'today') {
     res.end('unknown date: ' + req.params.date);
     return;
@@ -195,7 +209,8 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       channel : channel, 
       isToday : isToday,
       selectedDay : req.params.date,
-      query : req.query
+      query : req.query,
+      debug: true
     });
     console.log('done render ' + channel + '/' + req.params.date + ' using ' + (Date.now() - time) + ' ms')
   })
