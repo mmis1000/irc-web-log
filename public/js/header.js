@@ -59,6 +59,7 @@ $('.date select').change(function () {
     } else {
       location.href = day + location.search
     }
+    $('.time-selector-overlay.jump').css('display', 'table');
   } else {
     // alert('尚未完成')
     $('.time-selector-overlay.real, .time-selector-overlay.decoration')
