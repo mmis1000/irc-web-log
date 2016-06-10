@@ -1,0 +1,69 @@
+<%_ 
+  // performance test
+  var totalMedia = 0,
+      totalMediaTime = 0,
+      totalText = 0,
+      totalTextTime = 0,
+      mesureStart, mesure;
+  
+  if (typeof debug !== 'undefined' && debug === true) {
+    (function () {
+      var time = null;
+      mesureStart = function () {
+        time = Date.now();
+      }
+      mesure = function () {
+        return Date.now() - time;
+      }
+    } ())
+  }
+-%>
+    </div>
+    <div class="anchor" id="bottom"></div>
+    
+<%_ if (query.packed === "0") { -%>
+
+    <script>
+      head.load(["//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js", "/js/scroll-fix.js"]);
+    </script>
+    
+    <script>
+      head.load([
+        "//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js",
+        "/components/fancybox/lib/jquery.mousewheel-3.0.6.pack.js", 
+        "/components/fancybox/source/jquery.fancybox.css?v=2.1.5",                                                                                                            
+        "/components/fancybox/source/jquery.fancybox.pack.js?v=2.1.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5",                                                                                                      
+        "/components/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6",                                                                                                 
+        "/components/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7",                                                                                                 
+        "/components/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7",
+        "/js/jquery.lazyload.js",
+        "/js/channel-common.js",
+    <%_ if (query.admin != null) { -%>
+        "/js/channel-admin.js",
+    <%_ } -%>
+    <%_ if (isToday && query.live !== 'false') { -%>
+        "/socket.io/socket.io.js", 
+        "/js/md5.min.js",                                                                                                            
+        "/js/live.js"
+    <%_ } -%>
+      ]);
+    </script>
+    
+<%_ } -%>
+
+  </body>
+</html>
+<%_
+  if (typeof debug !== 'undefined' && debug === true) {
+    console.log(`
+// channel_foot.ejs
+performance:
+  totalText: ${totalText}
+  totalTextTime: ${totalTextTime}
+  totalMedia: ${totalMedia}
+  totalMediaTime: ${totalMediaTime}
+`)
+  }
+-%>

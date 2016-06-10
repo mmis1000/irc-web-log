@@ -39,13 +39,12 @@ router.use(range({
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.locals.moment = moment;
-
 router.locals.globalConfig = config;
 router.locals.escapeHTML = require("./lib/escape_html.js");
 router.locals.parseColor = require("./lib/parse_irc_color.js");
 router.locals.getColor = require("./lib/get_color.js");
 
-mongoose.connect(config.dbpath);
+mongoose.connect(config.dbpath, {server: { poolSize: 20 }});
 
 var db = mongoose.connection;
 db.on('error', onDbConnect.bind(null));
@@ -171,7 +170,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   } else {
     start = moment(start + ' ' + config.timezone, 'YYYY-MM-DD Z').toDate();
     if (isNaN( start.getTime()) ){
-      res.end('unknown date: ' + req.params.date);
+      res.status(404).end('unknown date: ' + req.params.date);
       return;
     }
     if (moment(start).add(1, 'days').isAfter(new Date())) {
@@ -187,14 +186,95 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     $lt : moment(start).utcOffset(config.timezone).endOf('day').toDate()
   }
   
+  res.header('content-type', 'text/html')
+  if (isToday) {
+    // don't cache live channel
+    res.header('Cache-Control', 'no-cache, must-revalidate');
+  } else {
+    // cache it, it is actully perminent link
+    var maxAge = 86400 * 1000;
+    if (!res.getHeader('Cache-Control')) res.header('Cache-Control', 'public, max-age=' + (maxAge / 1000));
+    res.header('etag', req.params.date);
+    if (req.get('If-None-Match') === req.params.date) {
+      // return it, don't validate here, since we don't care
+      return res.status(304).end('no change')
+    }
+  }
+  
+  var messageResultInitialPromise = Message.find(query)
+    .sort({ 'time' : 1})
+    .deepPopulate('medias medias.files')
+    .limit(100)
+    .exec();
+  var messageResultPromise = Message.find(query)
+    .sort({ 'time' : 1})
+    .deepPopulate('medias medias.files')
+    .skip(100)
+    .exec();
+  
+  var pRender = Q.nbind(router.render, router);
+  pRender('channel_part_head', {
+    messages : [], 
+    channel : channel, 
+    isToday : isToday,
+    selectedDay : req.params.date,
+    query : req.query,
+    debug: true
+  })
+  .then(function (html) {
+    res.write(html);
+    return messageResultInitialPromise;
+  })
+  .then(function (messages) {
+    // render the first 100 message for initial view
+    return pRender('channel_part_body', {
+      messages : messages, 
+      channel : channel, 
+      isToday : isToday,
+      selectedDay : req.params.date,
+      query : req.query,
+      debug: true
+    });
+  })
+  .then(function (html) {
+    res.write(html);
+    return messageResultPromise;
+  })
+  .then(function (messages) {
+    // render the other messages
+    return pRender('channel_part_body', {
+      messages : messages, 
+      channel : channel, 
+      isToday : isToday,
+      selectedDay : req.params.date,
+      query : req.query,
+      debug: true
+    });
+  })
+  .then(function (html) {
+    res.write(html);
+    return pRender('channel_part_foot', {
+      messages : [], 
+      channel : channel, 
+      isToday : isToday,
+      selectedDay : req.params.date,
+      query : req.query,
+      debug: true
+    });
+  })
+  .then(function (html) {
+    res.end(html);
+  })
+  .catch(function (err) {
+    res.status(500).end(err.toString());
+    return;
+  })
+  /*
   Message.find(query)
   .sort({ 'time' : 1})
   .deepPopulate('medias medias.files')
-  .exec(function (err, messages) {
-    if (err) {
-      res.end(err.toString());
-      return;
-    }
+  .exec()
+  .then(function (messages) {
     if (isToday) {
       // don't cache live channel
       res.header('Cache-Control', 'no-cache, must-revalidate');
@@ -214,7 +294,10 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     });
     console.log('done render ' + channel + '/' + req.params.date + ' using ' + (Date.now() - time) + ' ms')
   })
-
+  .catch(function (err) {
+    res.status(500).end(err.toString());
+    return;
+  })*/
 })
 router.get('/files/:id', function (req, res, next) {
   

@@ -8,7 +8,6 @@
   <div class="time"><a href="#<%= message._id -%>"><%= 
     moment(message.time)
     .utcOffset(globalConfig.timezone)
-    // .locale(globalConfig.locale) 
     .format('a hh:mm:ss')
   -%></a></div>
   <div class="from">

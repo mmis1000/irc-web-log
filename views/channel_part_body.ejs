@@ -1,0 +1,41 @@
+<%_ 
+  // performance test
+  var totalMedia = 0,
+      totalMediaTime = 0,
+      totalText = 0,
+      totalTextTime = 0,
+      mesureStart, mesure;
+  
+  if (typeof debug !== 'undefined' && debug === true) {
+    (function () {
+      var time = null;
+      mesureStart = function () {
+        time = Date.now();
+      }
+      mesure = function () {
+        return Date.now() - time;
+      }
+    } ())
+  }
+-%>
+        <%_ messages.forEach(function(message) { -%>
+          <%_ if (message.medias && message.medias.length > 0) { -%>
+            <%_ include _channel_message_media.ejs _%>
+          <%_ } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { -%>
+            <%_ include _channel_message.ejs _%>
+          <%_ } else { -%>
+            <%_ include _channel_message_action.ejs _%>
+          <%_ } -%>
+        <%_ }); -%>
+<%_
+  if (typeof debug !== 'undefined' && debug === true) {
+    console.log(`
+// channel_body.ejs
+performance:
+  totalText: ${totalText}
+  totalTextTime: ${totalTextTime}
+  totalMedia: ${totalMedia}
+  totalMediaTime: ${totalMediaTime}
+`)
+  }
+-%>
