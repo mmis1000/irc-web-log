@@ -17,10 +17,12 @@
     </a>
   </div>
   <div class="word"><%
-   message.medias.forEach(function (media) {  
-     media.files.forEach(function (file) {
+   for (var i = 0; i < message.medias.length; i++) { var media = message.medias[i];
+   // message.medias.forEach(function (media) {  
+     for (var j = 0; j < media.files.length; j++) { var file =  media.files[j];
+     // media.files.forEach(function (file) {
        if (media.role !== 'audio') { 
-         if (!file.isThumb) {return}
+         if (!file.isThumb) {continue;}
          -%><div style="height: <%= file.photoSize[1] -%>px; width: <%= file.photoSize[0] -%>px;" class="media_wrap">
               <img class="lazy media media_<%= media.role -%>" data-original="/files/<%= file.contentSrc -%>" 
               <%_ if (file.photoSize && file.photoSize.length === 2 ) { -%>
@@ -35,9 +37,11 @@
   -%><audio controls preload="none">
       <source src="/files/<%= file.contentSrc -%>" type="<%= file.MIME -%>">
     </audio><%
-      } 
-    })  
-  })
+      }  
+    }
+    // }) 
+  }
+  // })
   -%></div>
   <%_ if (query.admin != null) { -%>
   <div class="admin">
@@ -46,6 +50,8 @@
   </div>
   <%_ } -%>
 </div>
+
+
 <%_
   if (typeof debug !== 'undefined' && debug === true) {
     totalMediaTime += mesure();

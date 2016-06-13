@@ -28,11 +28,12 @@
           <div class="title">IRC LOG BOT</div>
           <div class="item-wrap">
             <% if (globalConfig.indexItems.length > 0) { %>
-              <% globalConfig.indexItems.forEach(function(item){ %>
+              <% for (var i = 0; i < globalConfig.indexItems.length; i++) {
+                   var item = globalConfig.indexItems[i]; %>
                 <a href="<%= item.path %>">
                   <button class="item" ><%= item.text %></button>
                 </a>
-              <% }); %>
+              <% } %>
             <% } else { %>
               hello to the logbot
             <% } %>

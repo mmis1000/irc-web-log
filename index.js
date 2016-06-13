@@ -54,6 +54,8 @@ var Message = null;
 var Media = null;
 var File = null;
 var gfs = null;
+var ejsStream = require("ejs-promise");
+
 //console.log(config.dbpath, config.collectionName + 'Trigger');
 var MessageChannel = mubsub(config.dbpath).channel(config.collectionName + 'Trigger');
 MessageChannel.subscribe('update', function(message) {
@@ -94,9 +96,8 @@ function onDbConnect(err, cb) {
 
 /* [start] inject some opt to ejs */
 ;(function () {
-  var ejs = require("ejs");
-  var old__express = ejs.__express;
-  ejs.__express = function (path, data, cb) {
+  var old__express = ejsStream.__express;
+  ejsStream.__express = function (path, data, cb) {
     return old__express.call(this, path, data, {rmWhitespace: true}, cb);
   }
 } ());
@@ -104,6 +105,7 @@ function onDbConnect(err, cb) {
 
 router.set('views', path.resolve(__dirname, 'views'));
 router.set('view engine', 'ejs');
+router.engine('ejs', ejsStream.__express);
 
 if (config["minify-html"]) {
   var minifyHTML = require('express-minify-html');
@@ -144,7 +146,7 @@ router.get('/message/:id/', function(req, res, next) {
     
     var maxAge = 86400 * 1000;
     if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + (maxAge / 1000));
-    res.render('message', {message : message});
+    res.render('message.ejs', {message : message});
   })
   .catch(function (err) {
     res.status(500).end(err.stack ? err.stack : err.toString());
@@ -201,25 +203,53 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     }
   }
   
-  var messageResultInitialPromise = Message.find(query)
+  var first100Message = Message.find(query)
     .sort({ 'time' : 1})
     .deepPopulate('medias medias.files')
     .limit(100)
-    .exec();
-  var messageResultPromise = Message.find(query)
-    .sort({ 'time' : 1})
-    .deepPopulate('medias medias.files')
-    .skip(100)
-    .exec();
+    .exec()
   
+  Message.find(query).count().then(function (counts) {
+    console.log('all ' + counts);
+    var datas = Object.create(router.locals);
+    
+    datas.messages = [first100Message];
+    datas.channel = channel; 
+    datas.isToday = isToday;
+    datas.selectedDay = req.params.date;
+    datas.query = req.query;
+    
+    for (var i = 1; i < counts / 100; i++) {
+      datas.messages.push(
+        Message.find(query)
+        .sort({ 'time' : 1})
+        .deepPopulate('medias medias.files')
+        .skip(i * 100)
+        .limit(100)
+        .exec()
+      )
+    }
+    
+    // datas.debug = true;
+    ejsStream.renderFile('./views/channel.ejs', datas, {rmWhitespace: true}, function (err, p) {
+      if (err) {
+        return res.status(500).end(err.toString());
+      }
+      p.outputStream.pipe(res);
+      p.then(function () {}, function (err) {
+        p.outputStream.unpipe(res);
+        res.end(err.message || err.stack || err.toString());
+      })
+    })
+  })
+  /*
   var pRender = Q.nbind(router.render, router);
-  pRender('channel_part_head', {
+  pRender('channel_part_head.ejs', {
     messages : [], 
     channel : channel, 
     isToday : isToday,
     selectedDay : req.params.date,
-    query : req.query,
-    debug: true
+    query : req.query
   })
   .then(function (html) {
     res.write(html);
@@ -227,7 +257,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   })
   .then(function (messages) {
     // render the first 100 message for initial view
-    return pRender('channel_part_body', {
+    return pRender('channel_part_body.ejs', {
       messages : messages, 
       channel : channel, 
       isToday : isToday,
@@ -242,7 +272,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   })
   .then(function (messages) {
     // render the other messages
-    return pRender('channel_part_body', {
+    return pRender('channel_part_body.ejs', {
       messages : messages, 
       channel : channel, 
       isToday : isToday,
@@ -253,13 +283,12 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   })
   .then(function (html) {
     res.write(html);
-    return pRender('channel_part_foot', {
+    return pRender('channel_part_foot.ejs', {
       messages : [], 
       channel : channel, 
       isToday : isToday,
       selectedDay : req.params.date,
-      query : req.query,
-      debug: true
+      query : req.query
     });
   })
   .then(function (html) {
@@ -269,6 +298,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     res.status(500).end(err.toString());
     return;
   })
+  */
   /*
   Message.find(query)
   .sort({ 'time' : 1})
@@ -446,7 +476,7 @@ router.get('/api/dump/', function (req, res, next) {
 });
 
 router.get('/', function (req, res, next) {
-  res.render('index', {});
+  res.render('index.ejs', {});
 });
 
 router.post('/api/admin/delete', basicAuth(config['db-manager-account'], config['db-manager-password']), function (req, res, next) {

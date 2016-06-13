@@ -18,7 +18,20 @@
     } ())
   }
 -%>
-        <%_ messages.forEach(function(message) { -%>
+        <%_ for (var i = 0; i < messages.length; i++) { 
+              var message = messages[i];
+              if ('object' === typeof message && 'function' ===  typeof message.then) {
+                if (typeof debug !== 'undefined' && debug === true) {
+                  console.log('yielding ' + i)
+                }
+                var results = yield message;
+                // console.log(results);
+                [].splice.apply(messages, [i, 1].concat(results))
+                message = results[0]
+                // console.log(messages.length);
+              }
+              // console.log('message ' + i)
+        -%>
           <%_ if (message.medias && message.medias.length > 0) { -%>
             <%_ include _channel_message_media.ejs _%>
           <%_ } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { -%>
@@ -26,7 +39,7 @@
           <%_ } else { -%>
             <%_ include _channel_message_action.ejs _%>
           <%_ } -%>
-        <%_ }); -%>
+        <%_ } -%>
 <%_
   if (typeof debug !== 'undefined' && debug === true) {
     console.log(`

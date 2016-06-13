@@ -50,15 +50,19 @@
               <% } %>
             </div>
             <div class='word'>
-              <% message.medias.forEach(function (media) { %>
+              <% // message.medias.forEach(function (media) { 
+                 for (var i = 0; i < message.medias.length; i++) { var media = message.medias[i];
+              %>
                 <% if (media.role === 'audio') { %>
-                  <% media.files.forEach(function (file) { %>
+                  <% // media.files.forEach(function (file) { 
+                     for (var j = 0; j < media.files.length; j++) { var file = media.files[j];
+                  %>
                     <div class="media-container">
                       <audio class="media" controls preload="none">
                         <source src="/files/<%= file.contentSrc %>" type="<%= file.MIME %>">
                       </audio>
                     </div>
-                  <% }) %>
+                  <% } %>
                 <% } else if (media.role === 'video') { %>
                   <%
                    var thumb = media.files.filter(function (file) {return file.isThumb})[0];
@@ -82,7 +86,7 @@
                 <% } else { %>
                   unsupported media type: <%= media.role %>
                 <% } %>
-              <% }) %>
+              <% } %>
             </div>
           <% } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { %>
             <div class="header">
