@@ -111,10 +111,11 @@ hasWebP().then(function (){
   enableWebpConvert();
   loadLazy();
 })
-
+/*
 $(function() {
   $("img.lazy").lazyload({
     threshold : 200,
     effect : "fadeIn"
   });
 });
+*/
