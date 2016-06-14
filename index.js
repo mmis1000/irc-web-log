@@ -214,7 +214,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   datas.isToday = isToday;
   datas.selectedDay = req.params.date;
   datas.query = req.query;
-  datas.debug = true;
+  // datas.debug = true;
   
   var countWait = Message.find(query).count().then(function (counts) {
     console.log('all ' + counts);
