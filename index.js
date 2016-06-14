@@ -44,7 +44,7 @@ router.locals.escapeHTML = require("./lib/escape_html.js");
 router.locals.parseColor = require("./lib/parse_irc_color.js");
 router.locals.getColor = require("./lib/get_color.js");
 
-mongoose.connect(config.dbpath, {server: { poolSize: 20 }});
+mongoose.connect(config.dbpath, {server: { poolSize: 40 }});
 
 var db = mongoose.connection;
 db.on('error', onDbConnect.bind(null));
@@ -196,8 +196,8 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     // cache it, it is actully perminent link
     var maxAge = 86400 * 1000;
     if (!res.getHeader('Cache-Control')) res.header('Cache-Control', 'public, max-age=' + (maxAge / 1000));
-    res.header('etag', req.params.date);
-    if (req.get('If-None-Match') === req.params.date) {
+    res.header('etag', req.params.date + '-' + ~~(Date.now() / 6 / 3600 / 1000));
+    if (req.get('If-None-Match') === req.params.date + '-' + ~~(Date.now() / 6 / 3600 / 1000)) {
       // return it, don't validate here, since we don't care
       return res.status(304).end('no change')
     }
@@ -209,16 +209,15 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     .limit(100)
     .exec()
   
-  Message.find(query).count().then(function (counts) {
+  var datas = Object.create(router.locals);
+  datas.channel = channel; 
+  datas.isToday = isToday;
+  datas.selectedDay = req.params.date;
+  datas.query = req.query;
+  datas.debug = true;
+  
+  var countWait = Message.find(query).count().then(function (counts) {
     console.log('all ' + counts);
-    var datas = Object.create(router.locals);
-    
-    datas.messages = [first100Message];
-    datas.channel = channel; 
-    datas.isToday = isToday;
-    datas.selectedDay = req.params.date;
-    datas.query = req.query;
-    
     for (var i = 1; i < counts / 100; i++) {
       datas.messages.push(
         Message.find(query)
@@ -229,19 +228,21 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
         .exec()
       )
     }
-    
-    // datas.debug = true;
-    ejsStream.renderFile('./views/channel.ejs', datas, {rmWhitespace: true}, function (err, p) {
-      if (err) {
-        return res.status(500).end(err.toString());
-      }
-      p.outputStream.pipe(res);
-      p.then(function () {}, function (err) {
-        p.outputStream.unpipe(res);
-        res.end(err.message || err.stack || err.toString());
-      })
+    return [];
+  })
+  datas.messages = [first100Message, countWait];
+  // datas.debug = true;
+  ejsStream.renderFile('./views/channel.ejs', datas, {rmWhitespace: true}, function (err, p) {
+    if (err) {
+      return res.status(500).end(err.toString());
+    }
+    p.outputStream.pipe(res);
+    p.then(function () {}, function (err) {
+      p.outputStream.unpipe(res);
+      res.end(err.message || err.stack || err.toString());
     })
   })
+  
   /*
   var pRender = Q.nbind(router.render, router);
   pRender('channel_part_head.ejs', {
