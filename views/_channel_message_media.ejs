@@ -24,7 +24,7 @@
        if (media.role !== 'audio') { 
          if (!file.isThumb) {continue;}
          -%><div style="height: <%= file.photoSize[1] -%>px; width: <%= file.photoSize[0] -%>px;" class="media_wrap">
-              <img class="lazy media media_<%= media.role -%>" data-original="/files/<%= file.contentSrc -%>" 
+              <img class="lazy media media_<%= media.role -%>" data-original="/files/<%= file.contentSrc -%>?png" 
               <%_ if (file.photoSize && file.photoSize.length === 2 ) { -%>
               width=<%= file.photoSize[0] -%> height=<%= file.photoSize[1] -%>
               <%_ } -%> 

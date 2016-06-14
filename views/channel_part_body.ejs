@@ -4,8 +4,9 @@
       totalMediaTime = 0,
       totalText = 0,
       totalTextTime = 0,
+      start = Date.now(),
       mesureStart, mesure;
-  
+      
   if (typeof debug !== 'undefined' && debug === true) {
     (function () {
       var time = null;
@@ -20,17 +21,19 @@
 -%>
         <%_ for (var i = 0; i < messages.length; i++) { 
               var message = messages[i];
-              if ('object' === typeof message && 'function' ===  typeof message.then) {
+              while ('object' === typeof message && 'function' ===  typeof message.then) {
                 if (typeof debug !== 'undefined' && debug === true) {
-                  console.log('yielding ' + i)
+                  console.log('  yielding ' + i);
+                  console.log('    at      ' + (Date.now() - start) + ' ms')
                 }
                 var results = yield message;
+                if (typeof debug !== 'undefined' && debug === true) {
+                  console.log('    done at ' + (Date.now() - start) + ' ms')
+                }
                 // console.log(results);
                 [].splice.apply(messages, [i, 1].concat(results))
-                message = results[0]
-                // console.log(messages.length);
+                message = messages[i]
               }
-              // console.log('message ' + i)
         -%>
           <%_ if (message.medias && message.medias.length > 0) { -%>
             <%_ include _channel_message_media.ejs _%>
@@ -45,6 +48,7 @@
     console.log(`
 // channel_body.ejs
 performance:
+  totalTime: ${Date.now() - start}
   totalText: ${totalText}
   totalTextTime: ${totalTextTime}
   totalMedia: ${totalMedia}
