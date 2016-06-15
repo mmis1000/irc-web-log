@@ -34,6 +34,7 @@
                 [].splice.apply(messages, [i, 1].concat(results))
                 message = messages[i]
               }
+              if (!message) continue;
         -%>
           <%_ if (message.medias && message.medias.length > 0) { -%>
             <%_ include _channel_message_media.ejs _%>
