@@ -214,7 +214,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   datas.isToday = isToday;
   datas.selectedDay = req.params.date;
   datas.query = req.query;
-  // datas.debug = true;
+  datas.debug = true;
   
   var countWait = Message.find(query).count().then(function (counts) {
     console.log('all ' + counts);
@@ -242,93 +242,6 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       res.end(err.message || err.stack || err.toString());
     })
   })
-  
-  /*
-  var pRender = Q.nbind(router.render, router);
-  pRender('channel_part_head.ejs', {
-    messages : [], 
-    channel : channel, 
-    isToday : isToday,
-    selectedDay : req.params.date,
-    query : req.query
-  })
-  .then(function (html) {
-    res.write(html);
-    return messageResultInitialPromise;
-  })
-  .then(function (messages) {
-    // render the first 100 message for initial view
-    return pRender('channel_part_body.ejs', {
-      messages : messages, 
-      channel : channel, 
-      isToday : isToday,
-      selectedDay : req.params.date,
-      query : req.query,
-      debug: true
-    });
-  })
-  .then(function (html) {
-    res.write(html);
-    return messageResultPromise;
-  })
-  .then(function (messages) {
-    // render the other messages
-    return pRender('channel_part_body.ejs', {
-      messages : messages, 
-      channel : channel, 
-      isToday : isToday,
-      selectedDay : req.params.date,
-      query : req.query,
-      debug: true
-    });
-  })
-  .then(function (html) {
-    res.write(html);
-    return pRender('channel_part_foot.ejs', {
-      messages : [], 
-      channel : channel, 
-      isToday : isToday,
-      selectedDay : req.params.date,
-      query : req.query
-    });
-  })
-  .then(function (html) {
-    res.end(html);
-  })
-  .catch(function (err) {
-    res.status(500).end(err.toString());
-    return;
-  })
-  */
-  /*
-  Message.find(query)
-  .sort({ 'time' : 1})
-  .deepPopulate('medias medias.files')
-  .exec()
-  .then(function (messages) {
-    if (isToday) {
-      // don't cache live channel
-      res.header('Cache-Control', 'no-cache, must-revalidate');
-    } else {
-      // cache it, it is actully perminent link
-      var maxAge = 86400 * 1000;
-      if (!res.getHeader('Cache-Control')) res.setHeader('Cache-Control', 'public, max-age=' + (maxAge / 1000));
-    }
-    var time = Date.now();
-    res.render('channel', {
-      messages : messages, 
-      channel : channel, 
-      isToday : isToday,
-      selectedDay : req.params.date,
-      query : req.query,
-      debug: true
-    });
-    console.log('done render ' + channel + '/' + req.params.date + ' using ' + (Date.now() - time) + ' ms')
-  })
-  .catch(function (err) {
-    res.status(500).end(err.toString());
-    return;
-  })*/
 })
 router.get('/files/:id', function (req, res, next) {
   
@@ -464,16 +377,6 @@ router.get('/api/dump/', function (req, res, next) {
       console.error(err)
     }
   });
-
-
-  /*
-  .exec(function (err, messages) {
-    if (err) {
-      res.json({ _error : err.toString() });
-      return;
-    }
-    res.json(messages);
-  });*/
 });
 
 router.get('/', function (req, res, next) {
