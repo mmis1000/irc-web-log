@@ -1,52 +1,53 @@
 <%_ 
-  // performance test
-  var totalMedia = 0,
-      totalMediaTime = 0,
-      totalText = 0,
-      totalTextTime = 0,
-      start = Date.now(),
-      mesureStart, mesure;
-      
-  if (typeof debug !== 'undefined' && debug === true) {
-    (function () {
-      var time = null;
-      mesureStart = function () {
-        time = Date.now();
-      }
-      mesure = function () {
-        return Date.now() - time;
-      }
-    } ())
+// performance test
+var totalMedia = 0,
+    totalMediaTime = 0,
+    totalText = 0,
+    totalTextTime = 0,
+    start = Date.now(),
+    mesureStart, mesure;
+    
+if (typeof debug !== 'undefined' && debug === true) {
+  (function () {
+    var time = null;
+    mesureStart = function () {
+      time = Date.now();
+    }
+    mesure = function () {
+      return Date.now() - time;
+    }
+  } ())
+}
+
+for (var i = 0; i < messages.length; i++) {
+  
+  var message = messages[i];
+  while ('object' === typeof message && 'function' ===  typeof message.then) {
+    if (typeof debug !== 'undefined' && debug === true) {
+      console.log('  yielding ' + i);
+      console.log('    at      ' + (Date.now() - start) + ' ms')
+    }
+    var results = yield message;
+    if (typeof debug !== 'undefined' && debug === true) {
+      console.log('    done at ' + (Date.now() - start) + ' ms')
+    }
+    // console.log(results);
+    [].splice.apply(messages, [i, 1].concat(results))
+    message = messages[i]
   }
--%>
-        <%_ for (var i = 0; i < messages.length; i++) { 
-              var message = messages[i];
-              while ('object' === typeof message && 'function' ===  typeof message.then) {
-                if (typeof debug !== 'undefined' && debug === true) {
-                  console.log('  yielding ' + i);
-                  console.log('    at      ' + (Date.now() - start) + ' ms')
-                }
-                var results = yield message;
-                if (typeof debug !== 'undefined' && debug === true) {
-                  console.log('    done at ' + (Date.now() - start) + ' ms')
-                }
-                // console.log(results);
-                [].splice.apply(messages, [i, 1].concat(results))
-                message = messages[i]
-              }
-              if (!message) continue;
-        -%>
-          <%_ if (message.medias && message.medias.length > 0) { -%>
-            <%_ include _channel_message_media.ejs _%>
-          <%_ } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) { -%>
-            <%_ include _channel_message.ejs _%>
-          <%_ } else { -%>
-            <%_ include _channel_message_action.ejs _%>
-          <%_ } -%>
-        <%_ } -%>
-<%_
-  if (typeof debug !== 'undefined' && debug === true) {
-    console.log(`
+  if (!message) continue;
+  
+  if (message.medias && message.medias.length > 0) {
+    -%><%_ include _channel_message_media.ejs _%><%
+  } else if (!message.message.match(/^\u0001ACTION.+\u0001$/i)) {
+    -%><%_ include _channel_message.ejs _%><%
+  } else { 
+    -%><%_ include _channel_message_action.ejs _%><%
+  }
+}
+
+if (typeof debug !== 'undefined' && debug === true) {
+  console.log(`
 // channel_body.ejs
 performance:
   totalTime: ${Date.now() - start}
@@ -55,5 +56,5 @@ performance:
   totalMedia: ${totalMedia}
   totalMediaTime: ${totalMediaTime}
 `)
-  }
+}
 -%>
