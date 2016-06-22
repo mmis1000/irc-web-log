@@ -379,6 +379,110 @@ router.get('/api/dump/', function (req, res, next) {
   });
 });
 
+router.get('/api/punch/user/:name', function(req, res, next) {
+  var name = '' + req.params.name;
+  var temp =  /([+-])(\d+):(\d+)/.exec(config.timezone)
+  var zoneHour = temp[1] + temp[2] - 0
+  var zoneMinute = temp[1] + temp[3] - 0
+  
+  var offset = (zoneHour + zoneMinute / 60) * 3600 * 1000;
+  
+  function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  }
+  
+  Message
+  .mapReduce({
+    query: {
+      from: {$regex: '^' + escapeRegExp(name) + '$', $options: 'i'},
+      time: {$gt: new Date(Date.now() - 86400 * 1000 * 7 * 8)}
+    },
+    out: { inline: 1 },
+    map: function () {
+      /* global emit, offset */
+      var time = this.time - 0;
+      var weekHour = ~~((time + 4 * 86400 * 1000 + offset) / 3600 / 1000 % (7 * 24));
+      emit(weekHour, 1);
+    },
+    reduce: function (key, values) {
+      return Array.sum( values );
+    },
+    scope: {
+      offset: offset
+    }
+  })
+  .then(function (results) {
+    res.json(results);
+  })
+  .catch(function (err) {
+    res.status(500).json({
+      error: err.message || err.stack || err.toString()
+    })
+  })
+})
+router.get('/punch/user/:name', function (req, res, next) {
+  try {
+    moment.locale(req.query.locale || config.locale);
+  } catch (e) {
+    console.error(e.stack || e.message || e.toString());
+  }
+  res.render('punch_card',{
+    name: req.params.name
+  })
+})
+router.get('/api/punch/channel/:channel', function(req, res, next) {
+  var channel = '' + req.params.channel;
+  var temp =  /([+-])(\d+):(\d+)/.exec(config.timezone)
+  var zoneHour = temp[1] + temp[2] - 0
+  var zoneMinute = temp[1] + temp[3] - 0
+  
+  var offset = (zoneHour + zoneMinute / 60) * 3600 * 1000;
+  
+  function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  }
+  
+  console.log('regex is ' + '^#' + escapeRegExp(channel) + '$')
+  
+  Message
+  .mapReduce({
+    query: {
+      to: {$regex: '^#' + escapeRegExp(channel) + '$', $options: 'i'},
+      time: {$gt: new Date(Date.now() - 86400 * 1000 * 7 * 4)}
+    },
+    out: { inline: 1 },
+    map: function () {
+      /* global emit, offset */
+      var time = this.time - 0;
+      var weekHour = ~~((time + 4 * 86400 * 1000 + offset) / 3600 / 1000 % (7 * 24));
+      emit(weekHour, 1);
+    },
+    reduce: function (key, values) {
+      return Array.sum( values );
+    },
+    scope: {
+      offset: offset
+    }
+  })
+  .then(function (results) {
+    res.json(results);
+  })
+  .catch(function (err) {
+    res.status(500).json({
+      error: err.message || err.stack || err.toString()
+    })
+  })
+})
+router.get('/punch/channel/:channel', function (req, res, next) {
+  try {
+    moment.locale(req.query.locale || config.locale);
+  } catch (e) {
+    console.error(e.stack || e.message || e.toString());
+  }
+  res.render('punch_card_channel',{
+    channel: req.params.channel
+  })
+})
 router.get('/', function (req, res, next) {
   res.render('index.ejs', {});
 });

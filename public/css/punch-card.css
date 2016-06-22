@@ -1,0 +1,172 @@
+.slot.head {
+    width: 120px;
+}
+
+.card {
+    display: table;
+    table-layout: fixed;
+    width: 1080px;
+}
+
+.line {
+    display: table-row;
+}
+.slot {
+    display: table-cell;
+    width: 40px;
+    height: 60px;
+    border-bottom: 1px solid #ccc;
+    vertical-align: middle;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 1s;
+}
+.slot:hover {
+    overflow: visible;
+}
+.hour {
+    display: inline-block;
+}
+.hour-info::after {
+    content: "　";
+    display: block;
+    width: 0px;
+    height: 0px;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    border-top: 5px solid #333;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+}
+.hour-info {
+    z-index: 9999;
+    display: block;
+    content: attr(data-count);
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    color: white;
+    background: #333;
+    border-radius: 4px;
+    position: absolute;
+    left: 50%;
+    margin-left: -40px;
+    bottom: 80%;
+    
+    transition: all 1s;
+    opacity: 0;
+}
+.slot:hover .hour-info {
+    opacity: 1;
+}
+
+.slot-data::after {
+    width: 1px;
+    height: 10px;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -1px;
+    content: "　";
+    background: #ccc;
+    z-index: -1;
+}
+
+.slot-data:nth-child(odd)::after {
+    height: 7px;
+    background: #ddd;
+}
+
+.card-wrap {
+    margin-left:auto;
+    margin-right:auto;
+    max-width: 1080px;
+    /*overflow: auto;*/
+}
+
+button:active:hover {
+  /* remove firefox button offset effect */
+  -moz-padding-end: 0px;
+  -moz-padding-start: 0px;
+}
+
+a, a:link, a:visited, a:hover, a:focus, a:active {
+  color: white;
+  text-decoration: none;
+}
+a:hover, a:focus  {
+  text-decoration: underline;
+}
+
+body {
+  padding-top: 40px;
+}
+
+.header {
+  position: fixed;
+  top:0px;
+  left:0px;
+  right:0px;
+  height:40px;
+  background:#448866;
+  
+  box-shadow: 0px 0px 4px 2px #666;
+  z-index: 99;
+}
+
+.button {
+  display: inline-block;
+  height: 40px;
+  border: none;
+  /*background:#55aa77;*/
+  background: transparent;
+  
+  margin:0px;
+  
+  line-height:40px;
+  font-size:18px;
+  color:#eeeeee;
+  padding: 0px 0.5em;
+  /*box-shadow: 0px 2px 2px 0px #666666;*/
+  
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+}
+
+@media only screen and (min-width: 360px) {
+  body {
+    padding-top: 56px;
+  }
+  .header {
+    height: 56px;
+  }
+  .button {
+    height: 56px;
+    margin: 0px;
+    line-height: 56px;
+    font-size:20px;
+  }
+}
+
+
+
+@media only screen and (min-width: 600px), (orientation: landscape) {
+  body {
+    padding-top: 48px;
+  }
+  .header {
+    height: 48px;
+  }
+  .button {
+    height: 48px;
+    line-height: 48px;
+  }
+}

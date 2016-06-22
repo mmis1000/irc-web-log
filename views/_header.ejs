@@ -70,6 +70,9 @@
     <i class="fa fa-repeat"></i>
     reload
   </a>
+  <a class="item" href="/punch/channel/<%= channel.replace(/^#/, '') %>">
+    Punch card
+  </a>
   <% if (query.admin != null) { %>
     <a class="item admin-switch" href="?">
       switch to normal mode

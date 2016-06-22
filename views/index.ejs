@@ -38,8 +38,50 @@
               hello to the logbot
             <% } %>
           </div>
+          <div class="punch-title">Punch Card for user</div>
+          <div class="punch-body" id="punch-user">
+            <input type="text" placeholder="type name here..."></input>
+            <button>go</button>
+          </div>
+          <div class="punch-title">Punch Card for channel</div>
+          <div class="punch-body" id="punch-channel">
+            <input type="text" placeholder="type channel here..."></input>
+            <button>go</button>
+          </div>
         </div>
       </div>
     </div>
+    
+    <script src="/components/jquery/dist/jquery.min.js"></script>
+    <script>
+      function jumpUser() {
+        var username = $("#punch-user input").val();
+        if (!username) {
+          alert('you must type a user name')
+          return;
+        }
+        document.location.href = "/punch/user/" + username;
+      }
+      function jumpChannel() {
+        var channelName = $("#punch-channel input").val();
+        if (!channelName) {
+          alert('you must type a channel name')
+          return;
+        }
+        document.location.href = "/punch/channel/" + channelName;
+      }
+      $("#punch-user button").click(jumpUser);
+      $("#punch-user input").keypress(function(e) {
+        if(e.which == 13) {
+          jumpUser();
+        }
+      });
+      $("#punch-channel button").click(jumpChannel);
+      $("#punch-channel input").keypress(function(e) {
+        if(e.which == 13) {
+          jumpChannel();
+        }
+      });
+    </script>
   </body>
 </html>

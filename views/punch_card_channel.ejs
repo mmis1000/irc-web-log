@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>punch card at <%= channel %> </title>
+        <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+        <script src="/components/jquery/dist/jquery.min.js"></script>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/punch-card.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div class="header">
+            <a class="button" href="javascript:window.history.back();">← back</a>
+        </div>
+        <div class="card-wrap">
+            <h3>Total message at <%= channel %> in past 4 weeks: <span class="total">loading...</span></h3>
+        <div class="card">
+            <div class="line">
+                <div class="slot head">
+                    week \ hour
+                </div>
+                <% for (var i = 0; i < 24; i++) { %>
+                <div class="slot" >
+                    <div>
+                        <%= i %>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        <%
+        var days = moment.weekdays();
+        var i, j, day;
+        for (i = 0; i < days.length; i++) {
+            day = days[i];
+            %>
+            <div class="line week-<%= i %>">
+                <div class="slot head">
+                    <%= day %>
+                </div>
+                <% for (j = 0; j < 24; j++) { %>
+                <div class="slot slot-data">
+                    <div class="hour-info">0</div>
+                    <div class="hour hour-<%= j %>">
+                    </div>
+                </div>
+                <% } %>
+            </div><%
+        }
+        %>
+        </div>
+        </div>
+        <script>
+            var channel = <%- JSON.stringify(channel) %>;
+            $.get("/api/punch/channel/" + channel, function (res) {
+                var max = 0;
+                var all = 0
+                res.forEach(function (d) {
+                    all += d.value;
+                    if (d.value > max) max = d.value;
+                })
+                $('.total').text(all);
+                res.forEach(function (d) {
+                    var day = (~~(d._id / 24));
+                    var hour = (d._id % 24);
+                    var val = d.value;
+                    var message =  'week ' + day + ' hour ' + val + ' : ' + val;
+                    
+                    var maxWidth = 32;
+                    var newWidth = maxWidth * Math.pow(val / max, 0.5);
+                    
+                    var color = "rgba(31, 127, 31, " + (val / max / 1.25 + 0.2) + ")"
+                    
+                    $('.week-' + day + ' .hour-' + hour)
+                    // .text(val)
+                    .css({
+                        width: newWidth + 'px',
+                        height: newWidth + 'px',
+                        "border-radius": (newWidth / 2 + 1) + 'px',
+                        "line-height": newWidth + 'px',
+                        border: "1px solid #444",
+                        background: color,
+                        color: "white"
+                    })
+                    .addClass("gt-0")
+                    .parent()
+                    .find(".hour-info")
+                    .text(val);
+                })
+            })
+        </script>
+    </body>
+</html>

@@ -33,7 +33,7 @@ html, body {
 }
 
 .title {
-  padding: 0.5em;
+  margin: 0.5em;
   font-size: 2em;
 }
 
@@ -49,7 +49,7 @@ html, body {
 }
 
 .item-wrap {
-  margin: 1em;
+  margin: 1.5em 1em;
   margin-left: 1.5em;
 }
 .item-wrap::after {
@@ -60,3 +60,39 @@ html, body {
   overflow:hidden;
   clear:both;
 } 
+
+.punch-title {
+  margin: 0.5em 0.8em;
+  font-size: 1.5em;
+}
+
+.punch-body {
+  margin: 1em;
+  margin-left: 1.5em;
+}
+.punch-body input {
+  border: 0px;
+  border-bottom: 2px solid #ccc;
+  border-top: 2px solid transparent;
+  background: transparent;
+  height: 2em;
+  line-height: 2em;
+  padding: 0px 0.5em;
+}
+
+
+.punch-body button {
+  padding: 0.5em;
+  border: 0px;
+  background: transparent;
+  /* background: #eee none repeat scroll 0% 0%; */
+  /* box-shadow: 0px 2px 2px 0px #666; */
+  
+  min-width: 60px;
+  color: #333;
+  /*border-radius: 4px;*/
+  
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
