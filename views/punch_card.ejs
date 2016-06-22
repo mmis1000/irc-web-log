@@ -38,8 +38,8 @@
                     <%= day %>
                 </div>
                 <% for (j = 0; j < 24; j++) { %>
-                <div class="slot slot-data">
-                    <div class="hour-info">0</div>
+                <div class="slot slot-data" data-index="<%= i * 24 + j%>">
+                    <div class="hour-info"><span class="counts">0</span> <a class="detail" href="#">detail</a></div>
                     <div class="hour hour-<%= j %>">
                     </div>
                 </div>
@@ -49,21 +49,37 @@
         %>
         </div>
         </div>
+        <div class="overlay">
+            <div class="data">
+            <!--
+                <div class="day">
+                    <h3>5/7</h3>
+                    <p><a href="#">-> ysitd</a>: test</p>
+                    <p><a href="#">-> ysitd</a>: test<</p>
+                </div>
+                <div class="day">
+                    <h3>5/7</h3>
+                    <p>-> ysitd: test<1</p>
+                    <p>-> ysitd: test<</p>
+                </div>
+            -->
+            </div>
+        </div>
         <script>
             var name = <%- JSON.stringify(name) %>;
+            var offset = <%- JSON.stringify(offset) %>;
             $.get("/api/punch/user/" + name, function (res) {
                 var max = 0;
                 var all = 0
                 res.forEach(function (d) {
-                    all += d.value;
-                    if (d.value > max) max = d.value;
+                    all += d.value.total;
+                    if (d.value.total > max) max = d.value.total;
                 })
                 $('.total').text(all);
                 res.forEach(function (d) {
                     var day = (~~(d._id / 24));
                     var hour = (d._id % 24);
-                    var val = d.value;
-                    var message =  'week ' + day + ' hour ' + val + ' : ' + val;
+                    var val = d.value.total;
                     
                     var maxWidth = 32;
                     var newWidth = maxWidth * Math.pow(val / max, 0.5);
@@ -83,8 +99,80 @@
                     })
                     .addClass("gt-0")
                     .parent()
-                    .find(".hour-info")
+                    .find(".hour-info .counts")
                     .text(val);
+                })
+                
+                $('.hour-info .detail').click(function () {
+                    $('.overlay').show();
+                    var day = $(this).parent().parent().attr('data-index') - 0;
+                    console.log(day);
+                    var data = res.filter(function (d) {
+                        return d._id == day;
+                    }) || []
+                    data = data[0] || {_id: day, value: {total: 0, value: []}};
+                    data = data.value.value;
+                    console.log(data);
+                    $(".overlay .data").empty();
+                    var data = data.map(function (i) {
+                        var date;
+                        var timeOffseted = new Date(new Date(i.time) - 0 + offset);
+                        var month = timeOffseted.getUTCMonth() + 1;
+                        var date = timeOffseted.getUTCDate();
+                        return {
+                            date: month + '/' + date,
+                            id: i.id,
+                            message: i.message,
+                            time: new Date(i.time) - 0,
+                            to: i.to
+                        }
+                    })
+                    data.sort(function (i, j) {
+                        return i.time > j.time ? 1 : -1;
+                    })
+                    data = data.reduce(function (prev, curr) {
+                        prev[curr.date] = prev[curr.date] || [];
+                        prev[curr.date].push(curr);
+                        return prev;
+                    }, {})
+                    for (var dateName in data) {
+                        var dateData = data[dateName];
+                        var container = $("<div>").addClass('day');
+                        
+                        var dayTitle = $('<h3>').text(dateName + ': ' + dateData.length + ' messages');
+                        container.append(dayTitle)
+                        
+                        var dayBody = $('<div>');
+                        
+                        dayBody.hide();
+                        dayTitle.click(function (dayBody) {
+                            dayBody.slideToggle();
+                        }.bind(null, dayBody))
+                        
+                        dateData.forEach(function (data) {
+                            dayBody.append(
+                                $('<p>')
+                                .append(
+                                    $('<a>')
+                                    .text('To ' + data.to + ': ')
+                                    .attr('href', '/message/' + data.id)
+                                )
+                                .append(
+                                    $('<span>')
+                                    .text(data.message)
+                                )
+                            )
+                        })
+                        dayBody.appendTo(container)
+                        container.appendTo($(".overlay .data"))
+                    }
+                    
+                    console.log(data);
+                })
+                $('.overlay').click(function (ev) {
+                    if ($(ev.target).is('.overlay')) {
+                        $('.overlay').hide();
+                    }
                 })
             })
         </script>

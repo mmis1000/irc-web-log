@@ -402,10 +402,23 @@ router.get('/api/punch/user/:name', function(req, res, next) {
       /* global emit, offset */
       var time = this.time - 0;
       var weekHour = ~~((time + 4 * 86400 * 1000 + offset) / 3600 / 1000 % (7 * 24));
-      emit(weekHour, 1);
+      emit(weekHour, {
+        total: 1, 
+        value: [{
+          time: this.time, 
+          to: this.to,
+          message: this.message, 
+          id: this._id
+        }]
+      });
     },
     reduce: function (key, values) {
-      return Array.sum( values );
+      var i = 0, newRes = {total: 0, value: []};
+      for (i = 0; i < values.length; i++) {
+        newRes.total += values[i].total;
+        newRes.value = [].concat.apply(newRes.value, values[i].value);
+      }
+      return newRes;
     },
     scope: {
       offset: offset
@@ -421,13 +434,19 @@ router.get('/api/punch/user/:name', function(req, res, next) {
   })
 })
 router.get('/punch/user/:name', function (req, res, next) {
+  var temp =  /([+-])(\d+):(\d+)/.exec(config.timezone)
+  var zoneHour = temp[1] + temp[2] - 0
+  var zoneMinute = temp[1] + temp[3] - 0
+  
+  var offset = (zoneHour + zoneMinute / 60) * 3600 * 1000;
   try {
     moment.locale(req.query.locale || config.locale);
   } catch (e) {
     console.error(e.stack || e.message || e.toString());
   }
   res.render('punch_card',{
-    name: req.params.name
+    name: req.params.name,
+    offset: offset
   })
 })
 router.get('/api/punch/channel/:channel', function(req, res, next) {
