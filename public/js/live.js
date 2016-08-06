@@ -316,7 +316,7 @@ socket.on('update', function (ev) {
           ev.data.from + 
           '</a>' +
           '</div>' + 
-          '<div class="word">' + parseColor(safe_tags_replace(ev.data.message)) + '</div></div>')
+          '<div class="word">' + ((ev.data.messageFormat && ev.data.messageFormat.match(/^html$/i)) ? ev.data.messageFormated : parseColor(safe_tags_replace(ev.data.message))) + '</div></div>')
     } else {
       message = 
         $('<div class="message"><div class="time"><a href="#' + ev.data._id + '">' + 

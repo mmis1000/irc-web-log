@@ -52,6 +52,13 @@ body, html {
   -moz-hyphens: auto;
   hyphens: auto;
 }
+
+#messages .message .word a {
+  text-decoration: underline;
+}
+#messages .message .word a:hover {
+  color: blue;
+}
 #messages .head {
   display:none;
 }

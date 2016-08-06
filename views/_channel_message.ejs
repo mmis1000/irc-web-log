@@ -15,7 +15,11 @@
       <%= message.from -%>
     </a>
   </div>
-  <div class="word"><%- parseColor(escapeHTML(message.message))%></div>
+  <% if (message.messageFormat && message.messageFormat.match(/^html$/i)) { %>
+    <div class="word"><%- message.messageFormated %></div>
+  <% } else { %>
+    <div class="word"><%- parseColor(escapeHTML(message.message))%></div>
+  <% } %>
   <%_ if (query.admin != null) { -%>
   <div class="admin">
     <a href="javascript: void(0)" class="delete">[delete]</a>
