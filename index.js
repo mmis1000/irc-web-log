@@ -581,8 +581,23 @@ var mongo_express_config = require('./mongo_express_config');
 (function (mongo_express_config) {
   var URL = require('url');
   var temp = URL.parse(config.dbpath);
-  mongo_express_config.mongodb.server = temp.hostname;
-  mongo_express_config.mongodb.port = parseInt(temp.port) || 27017;
+  
+  if ((/\/\/[^\/,]+,[^\/,]+[^\/]+\//).test(config.dbpath)) {
+    var pathes = (/\/\/([^\/,]+,[^\/,]+[^\/]+)\//).exec(config.dbpath)[1].split(/,/g);
+    mongo_express_config.mongodb.server = pathes.map(function (str) {
+      var temp = str.split(':');
+      mongo_express_config.mongodb.port = parseInt(temp[1]) || mongo_express_config.mongodb.port
+      return temp[0]
+    })
+    mongo_express_config.mongodb.port = mongo_express_config.mongodb.port || 27017;
+  } else {
+    mongo_express_config.mongodb.server = temp.hostname;
+    mongo_express_config.mongodb.port = parseInt(temp.port) || 27017;
+  }
+  console.log('current mongo_express db setting')
+  console.log(JSON.stringify(mongo_express_config.mongodb.server, 0, 4))
+  console.log(JSON.stringify(mongo_express_config.mongodb.port, 0, 4))
+  
   if (temp.auth) {
     mongo_express_config.mongodb.auth[0].database = temp.pathname.replace(/^\//, '');
     mongo_express_config.mongodb.auth[0].username = temp.auth.split(':')[0]
