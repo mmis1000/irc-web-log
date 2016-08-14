@@ -2,13 +2,18 @@
 var noWebp = false;
 window.noWebp = noWebp;
 
-function enableWebpConvert() {
-  $('img[data-mime="image/webp"]').each(function () {
-    var src = $(this).attr('data-original');
-    console.log('converted')
-    src = src.replace(/\?.*$/, '?convert=png&.png');
-    $(this).attr('data-original', src);
-  })
+function loadLazyAndEnableWebpConvert() {
+  $(function() {
+    $('img[data-mime="image/webp"]').each(function () {
+      var src = $(this).attr('data-original');
+      src = src.replace(/\?.*$/, '?convert=png&.png');
+      $(this).attr('data-original', src);
+    })
+    $("img.lazy").lazyload({
+      threshold : 200,
+      effect : "fadeIn"
+    });
+  });
 }
 function loadLazy() {
   $(function() {
@@ -106,19 +111,10 @@ var hasWebP = (function() {
 })();
 
 hasWebP().then(function (){
-  console.log('lazy load start no webp')
+  console.log('lazy load')
   loadLazy();
 }, function (e) {
   window.noWebp = noWebp = true;
-  enableWebpConvert();
-  console.log('lazy load')
-  loadLazy();
+  console.log('lazy load with convert')
+  loadLazyAndEnableWebpConvert()
 })
-/*
-$(function() {
-  $("img.lazy").lazyload({
-    threshold : 200,
-    effect : "fadeIn"
-  });
-});
-*/
