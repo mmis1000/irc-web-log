@@ -5,7 +5,8 @@ window.noWebp = noWebp;
 function enableWebpConvert() {
   $('img[data-mime="image/webp"]').each(function () {
     var src = $(this).attr('data-original');
-    src = src.replace(/(\?.*)?$/, '?convert=png&.png');
+    console.log('converted')
+    src = src.replace(/\?.*$/, '?convert=png&.png');
     $(this).attr('data-original', src);
   })
 }
@@ -105,10 +106,12 @@ var hasWebP = (function() {
 })();
 
 hasWebP().then(function (){
+  console.log('lazy load start no webp')
   loadLazy();
 }, function (e) {
   window.noWebp = noWebp = true;
   enableWebpConvert();
+  console.log('lazy load')
   loadLazy();
 })
 /*
