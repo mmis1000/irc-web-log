@@ -7,6 +7,7 @@ var basicAuth = require('basic-auth-connect');
 var bodyParser = require('body-parser')
 var range = require('express-range');
 var socketio = require('socket.io');
+var mubsubAdapter = require('socket.io-adapter-mongo');
 var express = require('express');
 var Q = require('q');
 var mongoose = require('mongoose');
@@ -72,9 +73,16 @@ MessageChannel.subscribe('update', function(message) {
     })
 });
 
+io.adapter(mubsubAdapter(config.dbpath));
+
 function onDbConnect(err, cb) {
   if (err) {
-    throw err;
+    // Handle error gracefully
+    // throw err;
+    console.log('Error occured!', e);
+    // Attempt reconnect
+    mongoose.connect(config.dbpath, {server: { poolSize: 40 }});
+    return;
   }
   
   var FileSchema = require("./log_modules/file_schema_factory")(mongoose, 'Files')
