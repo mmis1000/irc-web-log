@@ -12,7 +12,9 @@ var express = require('express');
 var Q = require('q');
 var mongoose = require('mongoose');
     mongoose.Promise = Q .Promise;
-
+    
+var LRU = require("lru-cache"),
+    messageCache = LRU(100);
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 var parseRange = require('range-parser');
 
@@ -224,17 +226,36 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   datas.query = req.query;
   datas.debug = true;
   
+  var cacheKeyPrefix = JSON.stringify(datas);
+  var messageChunk = null;
+  
   var countWait = Message.find(query).count().then(function (counts) {
     console.log('all ' + counts);
     for (var i = 1; i < counts / 100; i++) {
-      datas.messages.push(
-        Message.find(query)
-        .sort({ 'time' : 1})
-        .deepPopulate('medias medias.files')
-        .skip(i * 100)
-        .limit(100)
-        .exec()
-      )
+      if (i < counts / 100 - 1) {
+        messageChunk = messageCache.get(cacheKeyPrefix + i);
+        if (!messageChunk) {
+          messageChunk = 
+            Message.find(query)
+            .sort({ 'time' : 1})
+            .deepPopulate('medias medias.files')
+            .skip(i * 100)
+            .limit(100)
+            .exec()
+          messageCache.set(cacheKeyPrefix + i, messageChunk)
+        } else {
+          console.log('cache Hit')
+        }
+      } else {
+        messageChunk = 
+          Message.find(query)
+          .sort({ 'time' : 1})
+          .deepPopulate('medias medias.files')
+          .skip(i * 100)
+          .limit(100)
+          .exec()
+      }
+      datas.messages.push(messageChunk)
     }
     return [];
   })
@@ -249,6 +270,15 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       p.outputStream.unpipe(res);
       res.end(err.message || err.stack || err.toString());
     })
+    
+    req.once('end', function () {
+      console.log('request ended')
+      try {
+        res.end();
+      } catch (e) {}
+      p.defered.interrupt();
+    })
+    
   })
 })
 router.get('/files/:id', function (req, res, next) {
