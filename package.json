@@ -24,6 +24,7 @@
     "ffmpeg-static": "^1.0.0",
     "fluent-ffmpeg": "^2.0.1",
     "gridfs-stream": "^1.1.1",
+    "lru-cache": "^4.0.1",
     "mime": "^1.3.4",
     "moment": "^2.10.3",
     "mongo-express": "^0.30.18",
