@@ -139,5 +139,9 @@ $('.time-selector-overlay.real .confirm').on('click tap', function(ev) {
   // alert('redirecting...')
 })
 
+$('.time-selector-overlay.jump').click(function () {
+  $(this).css('display', 'none');
+})
+
 // to prevent form cache
 $('.date select').val(config.selectedDay);
