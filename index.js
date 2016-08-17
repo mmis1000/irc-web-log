@@ -226,7 +226,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
   datas.query = req.query;
   datas.debug = true;
   
-  var cacheKeyPrefix = JSON.stringify(datas);
+  var cacheKeyPrefix = JSON.stringify(query);
   var messageChunk = null;
   
   var countWait = Message.find(query).count().then(function (counts) {
