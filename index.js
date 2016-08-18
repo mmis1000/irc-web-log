@@ -62,13 +62,17 @@ var ejsStream = require("ejs-promise");
 //console.log(config.dbpath, config.collectionName + 'Trigger');
 var MessageChannel = mubsub(config.dbpath).channel(config.collectionName + 'Trigger');
 MessageChannel.subscribe('update', function(message) {
-    console.log('channel test', message);
     Message.findOne({
       _id: message.data._id
     }).deepPopulate('medias medias.files')
     .then(function (message) {
-      console.log('channel test2', message)
+      console.log(message.to + ' ' + message.toString());
       io.emit('update', { data: message });
+      if (sockets[message.to]) {
+        sockets[message.to].forEach(function (res) {
+          res.write(message.toString() + '\r\n');
+        })
+      }
     })
     .catch(function (err) {
       console.error(err);
@@ -81,7 +85,7 @@ function onDbConnect(err, cb) {
   if (err) {
     // Handle error gracefully
     // throw err;
-    console.log('Error occured!', e);
+    console.log('Error occured!', err);
     // Attempt reconnect
     mongoose.connect(config.dbpath, {server: { poolSize: 40 }});
     return;
@@ -132,6 +136,7 @@ if (config["minify-html"]) {
 }));
 }
 
+// pages
 router.get('/message/:id/', function(req, res, next) {
   // set moment locale here for performence
   try {
@@ -273,9 +278,12 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     
     req.once('end', function () {
       console.log('request ended')
-      try {
-        res.end();
-      } catch (e) {}
+      // kill it, if it isn't already
+      setTimeout(function () {
+        try {
+          res.end(null);
+        } catch (e) {}
+      }, 10)
       p.defered.interrupt();
     })
     
@@ -353,6 +361,7 @@ router.get('/files/:id', function (req, res, next) {
   })
 })
 
+// api for media info
 router.get('/medias/:id', function (req, res, next) {
   Media.findOne({
     _id: req.params.id
@@ -368,6 +377,7 @@ router.get('/medias/:id', function (req, res, next) {
   })
 })
 
+// api to dump whole db
 router.get('/api/dump/', function (req, res, next) {
   var isStart = true;
   var ended = false;
@@ -417,6 +427,7 @@ router.get('/api/dump/', function (req, res, next) {
   });
 });
 
+// punch card for user
 router.get('/api/punch/user/:name', function(req, res, next) {
   var name = '' + req.params.name;
   var temp =  /([+-])(\d+):(\d+)/.exec(config.timezone)
@@ -487,6 +498,8 @@ router.get('/punch/user/:name', function (req, res, next) {
     offset: offset
   })
 })
+
+// punchcard for channel
 router.get('/api/punch/channel/:channel', function(req, res, next) {
   var channel = '' + req.params.channel;
   var temp =  /([+-])(\d+):(\d+)/.exec(config.timezone)
@@ -540,10 +553,36 @@ router.get('/punch/channel/:channel', function (req, res, next) {
     channel: req.params.channel
   })
 })
+
+var sockets = {};
+// curl live interface
+router.get('/curl/:channel/', function (req, res, next) {
+  var channel = '#' + req.params.channel;
+  if (!sockets[channel]) {
+    sockets[channel] = [];
+  }
+  var items
+  sockets[channel].push(res)
+  res.write('---------------------------------------------\r\n' +
+            '||       welcome to the irc-web-log        ||\r\n' +
+            '|| https://github.com/mmis1000/irc-web-log ||\r\n' +
+            '---------------------------------------------\r\n' +
+            '* Now tailing log for ' + channel + '\r\n');
+  req.on('close', function () {
+    if (sockets[channel]) {
+      sockets[channel].splice(sockets[channel].indexOf(res), 1);
+      if (sockets[channel].length === 0) {
+        delete sockets[channel];
+      }
+    }
+  })
+});
+// index page
 router.get('/', function (req, res, next) {
   res.render('index.ejs', {});
 });
 
+// api for delete message
 router.post('/api/admin/delete', basicAuth(config['db-manager-account'], config['db-manager-password']), function (req, res, next) {
   Message.findById(req.body.id)
   .exec()

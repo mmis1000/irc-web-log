@@ -19,6 +19,14 @@ getMessageSchema = (mongoose, mediaCollectionName = "Media", collectionName = "M
     time : { type : Date, index : true }
   }, { collection : collectionName }
   
+  MessageSchema.methods.toString = ()->
+    if @messageFormat is 'html'
+      "#{@from}: #{@message}"
+    else
+      if @message.match /^\u0001ACTION\s.+\u0001$/ig
+        "* #{@from} feels #{@message.replace /^\u0001ACTION\s|\u0001$/ig, ''}"
+      else
+        "#{@from}: #{@message}"
   MessageSchema
   
 module.exports = getMessageSchema;
