@@ -132,7 +132,7 @@ function onDbConnect(err, cb) {
 ;(function () {
   var old__express = ejsStream.__express;
   ejsStream.__express = function (path, data, cb) {
-    return old__express.call(this, path, data, {rmWhitespace: true}, cb);
+    return old__express.call(this, path, data, {rmWhitespace: true, cache: true}, cb);
   }
 } ());
 /* [ end ] inject some opt to ejs  */
