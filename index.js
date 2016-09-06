@@ -66,7 +66,27 @@ MessageChannel.subscribe('update', function(message) {
       _id: message.data._id
     }).deepPopulate('medias medias.files')
     .then(function (message) {
-      console.log(message.to + ' ' + message.toString());
+      var prepandLength, prepend;
+      if (message.to.match(/^#/)) {
+        prepandLength = 
+          message.to.replace(/^#/, '').length +
+          message.from.length +
+          7;
+        prepend = " ".repeat(prepandLength);
+        console.log(
+          '[ ' + message.to.replace(/^#/, '') + ' ] ' + 
+          message.toString().replace(/\n/g, '\n' + prepend));
+      } else {
+        prepandLength = 
+          message.to.length +
+          message.from.length +
+          9;
+        prepend = " ".repeat(prepandLength);
+        console.log(
+          '[-> ' + message.to + ' ] ' + 
+          message.toString().replace(/\n/g, '\n' + prepend)
+        ); 
+      }
       io.emit('update', { data: message });
       if (sockets[message.to]) {
         sockets[message.to].forEach(function (res) {
@@ -75,7 +95,7 @@ MessageChannel.subscribe('update', function(message) {
       }
     })
     .catch(function (err) {
-      console.error(err);
+      console.error(err.stack || err.toString());
     })
 });
 
