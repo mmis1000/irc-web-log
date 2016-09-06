@@ -1070,7 +1070,7 @@
 /* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	!function(){var t=window.$||__webpack_require__(1);t(function(){function i(i){i="string"==typeof i?i:t(this).attr("href");var o=t(".header").height()+2;if(0==i.indexOf("#")){var n=t(i);if(n.get().length&&(t("html, body").animate({scrollTop:n.offset().top-o}),history&&"pushState"in history))return history.pushState({},document.title,window.location.pathname+i),!1}}setTimeout(function(){i(window.location.hash)},0),t("body").on("click","a",i)})}();
+	!function(){var t=window.$||__webpack_require__(1);t(function(){function e(e){var i="string"==typeof e?e:t(this).attr("href"),n=t(".header").height()+2;if(0==i.indexOf("#")){if(1===i.length)return e.preventDefault(),!1;var o=t(i);if(o.get().length&&(t("html, body").animate({scrollTop:o.offset().top-n}),history&&"pushState"in history))return history.pushState({},document.title,window.location.pathname+i),!1}}setTimeout(function(){e(window.location.hash)},0),t("body").on("click","a",e)})}();
 
 /***/ }
 /******/ ]);

@@ -6,8 +6,8 @@
          * If href argument ommited, assumes context (this) is HTML Element,
          * which will be the case when invoked by jQuery after an event
          */
-        function scroll_if_anchor(href) {
-            href = typeof(href) == "string" ? href : $(this).attr("href");
+        function scroll_if_anchor(event) {
+            var href = typeof(event) == "string" ? event : $(this).attr("href");
             
             // You could easily calculate this dynamically if you prefer
             var fromTop = $('.header').height() + 2;
@@ -15,6 +15,10 @@
             // If our Href points to a valid, non-empty anchor, and is on the same page (e.g. #foo)
             // Legacy jQuery and IE7 may have issues: http://stackoverflow.com/q/1593174
             if(href.indexOf("#") == 0) {
+                if (href.length === 1) {
+                    event.preventDefault()
+                    return false;
+                }
                 var $target = $(href);
                 // Older browser without pushState might flicker here, as they momentarily
                 // jump to the wrong position (IE < 10)
