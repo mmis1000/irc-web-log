@@ -47,7 +47,7 @@ router.locals.escapeHTML = require("./lib/escape_html.js");
 router.locals.parseColor = require("./lib/parse_irc_color.js");
 router.locals.getColor = require("./lib/get_color.js");
 
-mongoose.connect(config.dbpath, {server: { poolSize: 40 }});
+mongoose.connect(config.dbpath, config['mongoose-options'] || {server: { poolSize: 40 }});
 
 var db = mongoose.connection;
 db.on('error', onDbConnect.bind(null));

@@ -9,6 +9,7 @@ module.exports = {
     {"text" : "Web Chat for #test5566 on freenode.net", "path" : "http://webchat.freenode.net/?channels=%23test5566"},
     {"text" : "Log for #test5566", "path" : "/channel/test5566/today"}
   ],
+  "mongoose-options": {server: { poolSize: 40 }},
   "ejs-options": {
     "rmWhitespace": true,
     "cache": true
