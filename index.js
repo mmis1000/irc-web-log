@@ -217,7 +217,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     }
   }
   var cacheName = start.toISOString() + '_' + req.params.channel
-  if (isToday) {
+  if (isToday || !config["page-cache"]) {
     renderPage(req, res, start, isToday);
   } else {
     checkOrWritePage(cacheName, function (err, filename) {

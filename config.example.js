@@ -14,6 +14,7 @@ module.exports = {
     "rmWhitespace": true,
     "cache": true
   },
+  "page-cache": false,
   "minify-html": false,
   "enable-db-manager": true,
   "db-manager-path": '/mongo_express',
