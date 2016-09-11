@@ -2,6 +2,7 @@ require('coffee-script/register')
 
 var http = require('http');
 var path = require('path');
+var fs = require("fs");
 
 var basicAuth = require('basic-auth-connect');
 var bodyParser = require('body-parser')
@@ -215,6 +216,28 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       return;
     }
   }
+  var cacheName = start.toDateString() + '_' + req.params.channel
+  if (isToday) {
+    renderPage(req, res, start, isToday);
+  } else {
+    checkOrWritePage(cacheName, function (err, filename) {
+      if (!err) {
+        console.log('serve from cache')
+        res.sendFile(filename)
+        return
+      }
+      renderPage(req, res, start, isToday, function (err, res) {
+        if (err) return;
+        checkOrWritePage(cacheName, res, function (err, res) {
+          if (err) console.error(err.stack);
+        })
+      })
+    })
+  }
+})
+
+function renderPage(req, res, start, isToday, cb) {
+  cb = cb || function () {};
   var query = {};
   var channel = '#' + req.params.channel
   query.to = channel;
@@ -291,9 +314,12 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       return res.status(500).end(err.toString());
     }
     p.outputStream.pipe(res);
-    p.then(function () {}, function (err) {
+    p.then(function (res) {
+      cb(null, res);
+    }, function (err) {
       p.outputStream.unpipe(res);
       res.end(err.message || err.stack || err.toString());
+      cb(err);
     })
     
     req.once('end', function () {
@@ -308,7 +334,26 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
     })
     
   })
-})
+}
+function checkOrWritePage(name, content, cb) {
+  var filename = path.resolve('./cache-page', name + '.html')
+  if (arguments.length === 2) {
+    // check
+    cb = content;
+    fs.stat(filename, function (err, stat) {
+      if (err) return cb(err)
+      cb(null, filename)
+    })
+  } else {
+    //writefile
+    fs.writeFile(filename, content, function (err, stat) {
+      if (err) return cb(err)
+      cb(null, filename)
+    })
+  }
+  
+}
+
 router.get('/files/:id', function (req, res, next) {
   
   var promise = File.findOne({
