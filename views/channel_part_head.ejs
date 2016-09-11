@@ -33,6 +33,26 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta property="og:title" content="<%= channel -%>" />
     <meta property="og:type" content="website" />
+    
+<% if (isToday) { %>
+    <link rel="prev" href="/channel/<%= channel.slice(1) %>/<%= 
+      moment()
+      .utcOffset(globalConfig.timezone)
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD')
+    %>" />
+<% } else { %>
+    <link rel="prev" href="/channel/<%= channel.slice(1) %>/<%= 
+      moment(selectedDay)
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD')
+    %>" />
+    <link rel="next" href="/channel/<%= channel.slice(1) %>/<%= 
+      moment(selectedDay)
+      .add(1, 'days')
+      .format('YYYY-MM-DD')
+    %>" />
+<% } %>
     <!-- end of SEO area -->
     
     <!-- Chrome, Firefox OS and Opera -->
