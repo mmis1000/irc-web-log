@@ -43,7 +43,6 @@ body {
 .grid {
   width: 100%;
   position: relative;
-  display: inline-block;
 }
 .grid-item {
   position: absolute;
