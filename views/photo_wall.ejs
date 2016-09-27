@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Photo wall</title>
+        <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+        <script src="/components/jquery/dist/jquery.min.js"></script>
+        <script src="/components/masonry.pkgd.min.js"></script>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/photo-wall.css" rel="stylesheet" type="text/css" />
+        <script>
+            var page = <%= page %>;
+        </script>
+    </head>
+    <body>
+        <% if (page !== 0) {　%>
+        <div class="prev-next">
+            <a href="<%= page %>">prev</a>
+        </div>
+        <% }　%>
+        <div class="header">
+            <a class="button" href="/">Home</a>
+        </div>
+        <div class="grid">
+        </div>
+        <div class="prev-next">
+            <a href="<%= page + 2 %>">next</a>
+        </div>
+        <script>
+            var emptyItem = $('<div>')
+                .addClass('grid-item')
+                .css('border', '0px')
+                .css('opacity', 0)
+                .appendTo($('.grid'));
+            $.get('/api/medias/photo/' + page, function (medias) {
+                $('html').css('overflow-y', 'scroll');
+                var gridWidth = emptyItem[0].getBoundingClientRect().width;
+                $('html').css('overflow-y', '');
+                console.log(emptyItem[0].offsetHeight);
+                medias.forEach(function(media){
+                    var files, biggest, thumb;
+                    files = media.files.sort(function (a, b) {
+                        return a.photoSize[0] > b.photoSize[0] ? -1 : 1;
+                    });
+                    // console.log(files);
+                    biggest = files[0]
+                    files = files.filter(function (file) {
+                        return file.photoSize[0] >= 300 && file.photoSize[1] >= 50
+                    })
+                    if (files.length === 0) {
+                        thumb = biggest;
+                    } else {
+                        thumb = files[files.length - 1];
+                    }
+                    
+                    $('.grid').append(
+                        $('<div>')
+                        .addClass('grid-item')
+                        .height(thumb.photoSize[1] / thumb.photoSize[0] * (gridWidth - 2))
+                        .append(
+                            $('<a>')
+                            .attr('href', '/files/' + biggest.contentSrc)
+                            .append(
+                                $('<img>')
+                                .attr('src', '/files/' + thumb.contentSrc)
+                                .attr('data-size', JSON.stringify(thumb.photoSize))
+                            )
+                        )
+                    )
+                });
+                
+                var $grid = $('.grid').masonry({});
+            })
+        </script>
+    </body>
+</html>

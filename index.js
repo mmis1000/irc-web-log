@@ -717,6 +717,42 @@ router.post('/api/admin/delete-with-media', basicAuth(config['db-manager-account
   });
 })
 
+router.get('/api/medias/:type/:page', function(req, res, next) {
+  var pageSize = 30;
+  
+  if (!req.params.page.match(/^([1-9][0-9]*|0)$/)) {
+    return res.status(400).end('bad page number')
+  }
+  
+  var page = Number(req.params.page);
+  
+  if (req.query.pagesize) {
+    if (!req.query.pagesize.match(/^([1-9][0-9]*|0)$/)) {
+      return res.status(400).end('bad page size')
+    }
+    pageSize = Number(req.query.pagesize);
+  }
+  Media
+  .find({role: req.params.type})
+  .deepPopulate('files')
+  .skip(page * pageSize)
+  .limit(pageSize)
+  .lean()
+  .then(function (result) {
+    res.json(result);
+  })
+  .catch(function (err) {
+    res.status(500).json(err);
+  })
+})
+router.get('/photo-wall/:page', function (req, res, next) {
+  if (!req.params.page.match(/^[1-9][0-9]*$/)) {
+    return next();
+  }
+  res.render('photo_wall',{
+    page: req.params.page - 1
+  })
+})
 
 var mongo_express = require('mongo-express/lib/middleware');
 var mongo_express_config = require('./mongo_express_config');
