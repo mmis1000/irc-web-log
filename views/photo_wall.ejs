@@ -52,20 +52,24 @@
                     } else {
                         thumb = files[files.length - 1];
                     }
-                    
-                    $('.grid').append(
-                        $('<div>')
+                    var imgElm = $('<img>')
+                        .attr('src', '/files/' + thumb.contentSrc)
+                        .attr('data-size', JSON.stringify(thumb.photoSize))
+                    var gridItem = $('<div>')
                         .addClass('grid-item')
                         .height(thumb.photoSize[1] / thumb.photoSize[0] * (gridWidth - 2))
                         .append(
                             $('<a>')
                             .attr('href', '/files/' + biggest.contentSrc)
                             .append(
-                                $('<img>')
-                                .attr('src', '/files/' + thumb.contentSrc)
-                                .attr('data-size', JSON.stringify(thumb.photoSize))
+                                imgElm
                             )
                         )
+                    imgElm.one('load', function() {
+                        gridItem.css('height', '')
+                    })
+                    $('.grid').append(
+                        gridItem
                     )
                 });
                 
