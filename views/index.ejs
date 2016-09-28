@@ -27,16 +27,15 @@
         <div class="main-wrap">
           <div class="title">IRC LOG BOT</div>
           <div class="item-wrap">
-            <% if (globalConfig.indexItems.length > 0) { %>
+              <a href="/photo-wall/1">
+                <button class="item" >Photo wall</button>
+              </a>
               <% for (var i = 0; i < globalConfig.indexItems.length; i++) {
                    var item = globalConfig.indexItems[i]; %>
                 <a href="<%= item.path %>">
                   <button class="item" ><%= item.text %></button>
                 </a>
               <% } %>
-            <% } else { %>
-              hello to the logbot
-            <% } %>
           </div>
           <div class="punch-title">Punch Card for user</div>
           <div class="punch-body" id="punch-user">
@@ -47,9 +46,6 @@
           <div class="punch-body" id="punch-channel">
             <input type="text" placeholder="type channel here..."></input>
             <button>go</button>
-          </div>
-          <div class="photo-wall">
-            <a href="/photo-wall/1">Photo Wall</a>
           </div>
         </div>
       </div>

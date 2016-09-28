@@ -96,12 +96,3 @@ html, body {
   -webkit-user-select: none;
   user-select: none;
 }
-
-.photo-wall {
-  margin: 0.5em 0.8em;
-  font-size: 1.5em;
-}
-.photo-wall a {
-  text-decoration: none;
-  color: #007;
-}
