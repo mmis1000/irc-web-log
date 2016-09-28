@@ -734,7 +734,8 @@ router.get('/api/medias/:type/:page', function(req, res, next) {
   }
   Media
   .find({role: req.params.type})
-  .deepPopulate('files')
+  .sort({time: -1})
+  .populate('files')
   .skip(page * pageSize)
   .limit(pageSize)
   .lean()
