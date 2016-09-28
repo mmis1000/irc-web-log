@@ -14,9 +14,19 @@
     </head>
     <body>
         <% if (page !== 0) {　%>
-        <div class="prev-next">
-            <a href="<%= page %>">prev</a>
-        </div>
+            <div class="prev-next">
+                <a href="1">first</a>
+            </div>
+        <% }　%>
+        <% if (page >= 10) {　%>
+            <div class="prev-next">
+                <a href="<%= page - 9%>">prev 10</a>
+            </div>
+        <% }　%>
+        <% if (page !== 0) {　%>
+            <div class="prev-next">
+                <a href="<%= page %>">prev</a>
+            </div>
         <% }　%>
         <div class="header">
             <a class="button" href="/">Home</a>
@@ -25,6 +35,9 @@
         </div>
         <div class="prev-next">
             <a href="<%= page + 2 %>">next</a>
+        </div>
+        <div class="prev-next">
+            <a href="<%= page + 11 %>">next 10</a>
         </div>
         <script>
             var emptyItem = $('<div>')
