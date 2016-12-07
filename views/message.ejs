@@ -37,7 +37,7 @@
               <span class="from"><%= message.from %></span>
               says to 
               <% if (message.to.search(/#/) === 0) { %>
-                <a href="/channel/<%= message.to.slice(1) %>/<%= 
+                <a href="/channel/<%= encodeURIComponent(message.to.slice(1)) %>/<%= 
                  moment(message.time)
                 .utcOffset(globalConfig.timezone)
                 // .locale(globalConfig.locale)
@@ -93,7 +93,7 @@
               <span class="from"><%= message.from %></span>
               says to 
               <% if (message.to.search(/#/) === 0) { %>
-                <a href="/channel/<%= message.to.slice(1) %>/<%= 
+                <a href="/channel/<%= encodeURIComponent(message.to.slice(1)) %>/<%= 
                  moment(message.time)
                 .utcOffset(globalConfig.timezone)
                 .locale(globalConfig.locale)
@@ -111,7 +111,7 @@
               <span class="from"><%= message.from %></span>
               <% if (message.to.search(/#/) === 0) { %>
                 at
-                <a href="/channel/<%= message.to.slice(1) %>/<%= 
+                <a href="/channel/<%= encodeURIComponent(message.to.slice(1)) %>/<%= 
                  moment(message.time)
                 .utcOffset(globalConfig.timezone)
                 .locale(globalConfig.locale)
