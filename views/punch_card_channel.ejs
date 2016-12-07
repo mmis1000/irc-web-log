@@ -51,7 +51,7 @@
         </div>
         <script>
             var channel = <%- JSON.stringify(channel) %>;
-            $.get("/api/punch/channel/" + channel, function (res) {
+            $.get("/api/punch/channel/" + encodeURIComponent(channel), function (res) {
                 var max = 0;
                 var all = 0
                 res.forEach(function (d) {

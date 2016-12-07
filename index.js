@@ -212,7 +212,7 @@ router.get('/channel/:channel/:date/', function (req, res, next) {
       return;
     }
     if (moment(start).add(1, 'days').isAfter(new Date())) {
-      res.redirect('/channel/' + req.params.channel + '/today');
+      res.redirect('/channel/' + encodeURIComponent(req.params.channel) + '/today');
       return;
     }
   }

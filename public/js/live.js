@@ -100,15 +100,24 @@ var parseColor = function() {
             key : "color",
             value : color
           })
-        }
-        if (temp[1]) {
-          background = colors[parseInt(temp[1])];
-          if (background) {
-            style.push({
-              key : "background",
-              value : background
-            })
+          if (temp[1]) {
+            background = colors[parseInt(temp[1])];
+            if (background) {
+              style.push({
+                key : "background",
+                value : background
+              })
+            }
           }
+        } else {
+          style.push({
+            key : "color",
+            value : null
+          })
+          style.push({
+            key : "background",
+            value : null
+          })
         }
 
         return {
@@ -150,7 +159,7 @@ var parseColor = function() {
 
         var html, matchrule, matchrule2, allStyle, temp, text, styles, stylefrag, i, fragTemp;
         allStyle = [2, 15, 22, 29, 31, 3];
-        matchrule = /((?:\u0003\d\d?,\d\d?|\u0003\d\d?|\u0002|\u001d|\u000f|\u0016|\u001f)+)/g;
+        matchrule = /((?:\u0003\d\d?,\d\d?|\u0003\d?\d?|\u0002|\u001d|\u000f|\u0016|\u001f)+)/g;
         /* use "html" to prevent break links*/
         //html = $(this).html();
         temp = html.split(matchrule);
@@ -164,7 +173,7 @@ var parseColor = function() {
             continue;
           }
           styles = {};
-          matchrule2 = /((?:\u0003\d\d?,\d\d?|\u0003\d\d?|\u0002|\u001d|\u000f|\u0016|\u001f))/g;
+          matchrule2 = /((?:\u0003\d\d?,\d\d?|\u0003\d?\d?|\u0002|\u001d|\u000f|\u0016|\u001f))/g;
           fragTemp = matchrule2.exec(text);
 
           if (!fragTemp) {

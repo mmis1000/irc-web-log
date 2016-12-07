@@ -68,7 +68,7 @@
         <script>
             var name = <%- JSON.stringify(name) %>;
             var offset = <%- JSON.stringify(offset) %>;
-            $.get("/api/punch/user/" + name, function (res) {
+            $.get("/api/punch/user/" + encodeURIComponent(name), function (res) {
                 var max = 0;
                 var all = 0
                 res.forEach(function (d) {

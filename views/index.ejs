@@ -59,7 +59,7 @@
           alert('you must type a user name')
           return;
         }
-        document.location.href = "/punch/user/" + username;
+        document.location.href = "/punch/user/" + encodeURIComponent(username);
       }
       function jumpChannel() {
         var channelName = $("#punch-channel input").val();
@@ -67,7 +67,7 @@
           alert('you must type a channel name')
           return;
         }
-        document.location.href = "/punch/channel/" + channelName;
+        document.location.href = "/punch/channel/" + encodeURIComponent(channelName);
       }
       $("#punch-user button").click(jumpUser);
       $("#punch-user input").keypress(function(e) {
