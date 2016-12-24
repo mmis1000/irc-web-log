@@ -262,6 +262,12 @@ var parseColor = function() {
           }
         }
         
+        for (i = temp.length - 1; i >= 1; i--) {
+          if (typeof temp[i] === 'object' && typeof temp[i - 1] === 'object') {
+            temp.splice(i - 1, 1);
+          }
+        }
+        
         for (i = 0; i < temp.length; i++) {
           if (typeof temp[i] === "object") {
             temp.splice(i, 2, wrap(temp[i + 1], temp[i]));
