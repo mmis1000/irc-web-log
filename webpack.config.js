@@ -86,7 +86,7 @@ module.exports = {
             "hammerjs":
                 path.resolve(__dirname, "public/components/hammerjs/hammer.js"),
             "socket_io":
-                path.resolve(__dirname, "node_modules/socket.io/node_modules/socket.io-client/"),
+                getSocketIoPath(__dirname),
             "lazyload":
                 path.resolve(__dirname, "public/js/jquery.lazyload.js"),
             "polyfill_datepicker":
@@ -128,10 +128,19 @@ module.exports = {
     ]
 }
 
-        // "/components/fancybox/lib/jquery.mousewheel-3.0.6.pack.js", 
-        // "/components/fancybox/source/jquery.fancybox.css?v=2.1.5",      
-        // "/components/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5",                                                                                                      
-        // "/components/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5",                                                                                                      
-        // "/components/fancybox/source/helpers/jquery.fancybox-media.js?v=1.0.6",                                                                                                 
-        // "/components/fancybox/source/helpers/jquery.fancybox-thumbs.css?v=1.0.7",                                                                                                 
-        // "/components/fancybox/source/helpers/jquery.fancybox-thumbs.js?v=1.0.7",
+function getSocketIoPath(basePath) {
+    var sioPath, fs = require('fs');
+    try {
+        sioPath = path.resolve(basePath, "node_modules/socket.io/node_modules/socket.io-client/");
+        fs.statSync(sioPath);
+        return sioPath;
+    } catch(e) {}
+    
+    try {
+        sioPath = path.resolve(basePath, "node_modules/socket.io-client/");
+        fs.statSync(sioPath);
+        return sioPath;
+    } catch(e) {}
+    
+    throw new Error('cannot find socket io at expected path, please do npm install first')
+}
