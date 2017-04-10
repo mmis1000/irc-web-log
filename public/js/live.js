@@ -13,6 +13,7 @@ function replaceTag(tag) {
 function safe_tags_replace(str) {
     return str.replace(/[&<>]/g, replaceTag);
 }
+
 var parseColor = function() {
 
     var colors = [
@@ -308,14 +309,33 @@ var getColor = function() {
   return getColor_;
 }();
 
+var getFullName = function(userId, userInfo) {
+  var namePart = [];
+  if (!userInfo) {
+    return userId;
+  }
+  
+  var namePart = [];
+  
+  if (userInfo.firstName) namePart.push(userInfo.firstName) 
+  if (userInfo.midName) namePart.push(userInfo.midName)
+  if (userInfo.lastName) namePart.push(userInfo.lastName)
+  if (namePart.length > 0) return namePart.join(' ')
+  
+  if (userInfo.nicknames.length > 0) return userInfo.nicknames[0]
+  
+  return userInfo._id
+}
 
 var socket = io();
 var autoScroll = true;
 
-
 socket.on('update', function (ev) {
   console.log(ev.data);
   if (ev.data.to === channel) {
+    var userInfo = ev.userInfo
+    var fullName = getFullName(ev.data.from, userInfo)
+    
     var shouldScroll = autoScroll && ($(window).scrollTop() + $(window).height() == $(document).height());
     var message = null;
     if (ev.data.medias && ev.data.medias.length > 0) {
@@ -329,7 +349,7 @@ socket.on('update', function (ev) {
           '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
           ev.data._id+
           '">'+
-          ev.data.from + 
+          safe_tags_replace(fullName) + 
           '</a>' +
           '</div>' + 
           '<div class="word">' + 
@@ -373,7 +393,7 @@ socket.on('update', function (ev) {
           '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
           ev.data._id+
           '">'+
-          ev.data.from + 
+          safe_tags_replace(fullName) + 
           '</a>' +
           '</div>' + 
           '<div class="word">' + ((ev.data.messageFormat && ev.data.messageFormat.match(/^html$/i)) ? ev.data.messageFormated : parseColor(safe_tags_replace(ev.data.message))) + '</div></div>')
@@ -394,7 +414,7 @@ socket.on('update', function (ev) {
           '<div class="word">' + 
           '<a style="color: ' + getColor(ev.data.from) + '" href="/message/'+
           ev.data._id+
-          '">' + ev.data.from + '</a> ' +
+          '">' + safe_tags_replace(fullName) + '</a> ' +
           parseColor(safe_tags_replace((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(ev.data.message)[1])) + '</div></div>')
     }
     

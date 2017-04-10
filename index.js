@@ -36,6 +36,8 @@ var router = express();
 var server = http.createServer(router);
 var io = socketio.listen(server);
 
+var MessageChannel = mubsub(config.dbpath).channel(config.collectionName + 'Trigger');
+
 router.use(range({
   accept: 'bytes',
   limit: 10,
@@ -47,6 +49,49 @@ router.locals.globalConfig = config;
 router.locals.escapeHTML = require("./lib/escape_html.js");
 router.locals.parseColor = require("./lib/parse_irc_color.js");
 router.locals.getColor = require("./lib/get_color.js");
+var getUserInfo = router.locals.getUserInfo = (function () {
+  var userCache = LRU({ max: 500, maxAge: 1000 * 60 * 60 * 2 });
+  
+  MessageChannel.subscribe('user-update', function(data) {
+    var user = data.data;
+    
+    userCache.del(user._id);
+    user.ids.forEach(function (id) {
+      userCache.del(id);
+    })
+  });
+  
+  return function getUser(id) {
+    var resultPromise = userCache.get(id);
+    
+    if (resultPromise !== undefined) {
+      return resultPromise;
+    }
+    
+    resultPromise = User.findOne({
+      _id: id
+    })
+    .deepPopulate('images images.files')
+    .exec()
+    .then(function (user) {
+      if (user) {
+        return user;
+      }
+      
+      return User.findOne({
+        ids: id
+      })
+      .deepPopulate('images images.files')
+      .exec();
+    })
+    .then(function (user) {
+      userCache.set(id, user);
+      return user;
+    });
+    
+    return resultPromise;
+  };
+} ());
 
 mongoose.connect(config.dbpath, config['mongoose-options'] || {server: { poolSize: 40 }});
 
@@ -54,44 +99,57 @@ var db = mongoose.connection;
 db.on('error', onDbConnect.bind(null));
 db.once('open', onDbConnect.bind(null, null));
 
+var escapeRegExp = function(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
 var Message = null;
 var Media = null;
 var File = null;
+var User = null;
 var gfs = null;
 var ejsStream = require("ejs-promise");
 
-//console.log(config.dbpath, config.collectionName + 'Trigger');
-var MessageChannel = mubsub(config.dbpath).channel(config.collectionName + 'Trigger');
 MessageChannel.subscribe('update', function(message) {
     Message.findOne({
       _id: message.data._id
     }).deepPopulate('medias medias.files')
     .then(function (message) {
-      var prepandLength, prepend;
+      var userPromise = getUserInfo(message.from);
+      var targetPromise = getUserInfo(message.to);
+      return Q.all([Promise.resolve(message), userPromise, targetPromise]);
+    })
+    .then(function ($) {
+      var message = $[0], userInfo = $[1], targetInfo = $[2];
+      
+      var prepandLength, 
+          prepend, 
+          name = userInfo ? userInfo.getFullName() : message.from,
+          target = targetInfo ? targetInfo.getFullName() : message.to.replace(/^#/, '');
+
       if (message.to.match(/^#/)) {
         prepandLength = 
-          message.to.replace(/^#/, '').length +
-          message.from.length +
+          target.length +
+          name.length +
           7;
         prepend = " ".repeat(prepandLength);
         console.log(
-          '[ ' + message.to.replace(/^#/, '') + ' ] ' + 
-          message.toString().replace(/\n/g, '\n' + prepend));
+          '[ ' + target + ' ] ' + 
+          (name + ': ' + message.message).replace(/\n/g, '\n' + prepend));
       } else {
         prepandLength = 
-          message.to.length +
-          message.from.length +
+          target.length +
+          name.length +
           9;
         prepend = " ".repeat(prepandLength);
         console.log(
-          '[-> ' + message.to + ' ] ' + 
-          message.toString().replace(/\n/g, '\n' + prepend)
+          '[-> ' + target + ' ] ' + 
+          (name + ': ' + message.message).replace(/\n/g, '\n' + prepend)
         ); 
       }
-      io.emit('update', { data: message });
+      io.emit('update', { data: message, userInfo: userInfo });
       if (sockets[message.to]) {
         sockets[message.to].forEach(function (res) {
-          res.write(message.toString() + '\r\n');
+          res.write(name + ': ' + message.message + '\r\n');
         })
       }
     })
@@ -120,6 +178,9 @@ function onDbConnect(err, cb) {
   var MessageSchema = require("./log_modules/message_schema_factory")(mongoose, 'Media', 'Messages')
   MessageSchema.plugin(deepPopulate);
   Message =  mongoose.model('Message', MessageSchema)
+  var UserSchema = require("./log_modules/user_schema_factory")(mongoose, 'Media', 'Users')
+  UserSchema.plugin(deepPopulate);
+  User =  mongoose.model('User', UserSchema)
   
   gfs = Grid(mongoose.connection.db, mongoose.mongo)
   //init server after db connection finished
@@ -320,6 +381,7 @@ function renderPage(req, res, start, isToday, cb) {
       p.outputStream.unpipe(res);
       res.end(err.message || err.stack || err.toString());
       cb(err);
+      console.log(err);
     })
     
     req.once('end', function () {

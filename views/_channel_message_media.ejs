@@ -13,7 +13,15 @@
   -%></a></div>
   <div class="from">
     <a style="color: <%= getColor(message.from); -%>" href="/message/<%= message._id -%>">
-      <%= message.from -%>
+      <%_
+        var userInfo
+        try {
+          userInfo = yield getUserInfo(message.from);
+        } catch (e) {
+          console.log(e);
+        }
+      -%>
+      <%= userInfo ? userInfo.getFullName() : message.from -%>
     </a>
   </div>
   <div class="word"><%

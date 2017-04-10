@@ -17,21 +17,30 @@
       }
     } ())
   }
+  
+  var channelInfo
+  try {
+    channelInfo = yield getUserInfo(channel);
+  } catch (e) {
+    console.log(e);
+  }
+  
+  var channelName = channelInfo ? channelInfo.getFullName() : channel;
 -%>
 <!DOCTYPE html>
 <html lang="en" class="">
   <head>
     <meta charset="utf-8">
-    <title>Log | <%= channel -%></title>
+    <title>Log | <%= channelName -%></title>
     <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="description" content="Log for <%= channel -%>">
+    <meta name="description" content="Log for <%= channelName -%>">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
     <!-- start of SEO area -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta property="og:title" content="<%= channel -%>" />
+    <meta property="og:title" content="<%= channelName -%>" />
     <meta property="og:type" content="website" />
     
 <% if (isToday) { %>

@@ -16,7 +16,15 @@
       *
     </a>
   </div>
-  <div class="word"><a href="/message/<%= message._id -%>" style="color: <%= getColor(message.from); -%>" ><%= message.from -%></a> <%- parseColor(escapeHTML((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(message.message)[1]))%></div>
+  <%_
+    var userInfo
+    try {
+      userInfo = yield getUserInfo(message.from);
+    } catch (e) {
+      console.log(e);
+    }
+  -%>
+  <div class="word"><a href="/message/<%= message._id -%>" style="color: <%= getColor(message.from); -%>" ><%= userInfo ? userInfo.getFullName() : message.from -%></a> <%- parseColor(escapeHTML((/^\u0001ACTION\s*(.+)\s*\u0001$/i).exec(message.message)[1]))%></div>
   <%_ if (query.admin != null) { -%>
   <div class="admin">
     <a href="javascript: void(0)">[delete]</a>
