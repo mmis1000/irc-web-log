@@ -333,7 +333,7 @@ function renderPage(req, res, start, isToday, cb) {
   datas.isToday = isToday;
   datas.selectedDay = req.params.date;
   datas.query = req.query;
-  datas.debug = true;
+  datas.debug = false;
   
   var cacheKeyPrefix = JSON.stringify(query);
   var messageChunk = null;
