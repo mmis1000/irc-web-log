@@ -59,9 +59,6 @@ body, html {
 #messages .message .word a:hover {
   color: blue;
 }
-#messages .head {
-  display:none;
-}
 
 #messages .message {
   overflow: hidden;
@@ -92,18 +89,41 @@ body, html {
   vertical-align: middle;
 }
 
+#messages .message.log-title h1 {
+  margin: 0px;
+  padding: 1em;
+  color: #222;
+}
+#messages .message.log-title a {
+  text-decoration: underline;
+}
+
+.copyright {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  padding-bottom: 0.5em;
+}
+.copyright a {
+  color: #66c;
+}
 @media only screen and (min-width: 600px) {
   #messages .message:nth-child(2n+1) {
     background : transparent;
   }
+  
+  
   #messages .message {
-    border-bottom: #bbbbbb solid 1px;
+    border-top: #bbbbbb solid 1px;
     
     margin-top: 0em;
     margin-bottom: 0em;
     background: transparent;
     border-radius: 0px;
     box-shadow: none;
+  }
+  #messages .message.log-title {
+    border-top: 0px;
   }
   #messages .message .time {
     min-width:120px;

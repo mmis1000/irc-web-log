@@ -149,10 +149,24 @@
     <%_ } -%>
 <%_ } -%>
 
-        <div class="message head">
-          <div class="time">time</div>
-          <div class="from">from</div>
-          <div class="word">message</div>
+        <div class="message log-title">
+          <% if (channelInfo && channelInfo.profileUrl) { %>
+            <h1>
+              Log for
+              <a href="<%= channelInfo.profileUrl %>" 
+                style="color: <%= getColor(channel); %>"
+                target="_blank">
+                <%= channelName %>
+              </a>
+            </h1>
+          <% } else { %>
+            <h1 class="log-title">
+              Log for 
+              <span style="color: <%= getColor(channel); %>" target="_blank">
+                <%= channelName %>
+              </span>
+            </h1>
+          <% } %>
         </div> 
 <%_
   if (typeof debug !== 'undefined' && debug === true) {
