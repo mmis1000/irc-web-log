@@ -85,7 +85,11 @@ var getUserInfo = router.locals.getUserInfo = (function () {
       .exec();
     })
     .then(function (user) {
-      userCache.set(id, user);
+      if (user !== null) {
+        userCache.set(id, user);
+      } else {
+        userCache.set(Q.resolve(null));
+      }
       return user;
     });
     
@@ -841,21 +845,47 @@ router.get('/api/search', function(req, res, next) {
   
   regex = new RegExp(query, 'i')
   
-  Message.find({
+  var query = {
     message: {$regex: regex},
     to: '#' + channel
+  }
+  
+  var count;
+  
+  Message.count(query)
+  .then(function (c) {
+    count = c;
+    return Message.find(query)
+    .sort({time: -1})
+    .skip(pageSize * page)
+    .limit(pageSize)
   })
-  .sort({time: -1})
-  .skip(pageSize * page)
-  .limit(pageSize)
-  .exec()
   .then(function (result) {
+    return Q.all(
+      result
+      .map(function(item) {
+        return item.toObject();
+      })
+      .map(function (item) {
+        return getUserInfo(item.from)
+        .then(function (user) {
+          item.fromName = user ? user.getFullName() : item.from;
+          return item;
+        })
+      })
+    )
+  })
+  .then(function (result) {
+    var hasMore = (page + 1) * pageSize < count;
     res.json({
+      hasMore: hasMore,
+      count: count,
       ok: true,
       data: result
     });
   })
   .catch(function (err) {
+    console.log(err.stack);
     res.status(500).json({
       ok: false,
       err: err.message || err.stack || err.toString
