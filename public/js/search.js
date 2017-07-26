@@ -360,14 +360,20 @@ function addItem(item) {
     newItem.appendTo(dayItem)
 }
 
-$('.submit').click(function () {
+function doSearch() {
+    if (!$('.search').val()) return;
+    
+    text = $('.search').val();
     currentPage = 0;
-    text = $('.search').val()
     $.get('/api/search', {text: text, page: currentPage, channel: channel}, function(res) {
         console.log(res);
         $('.results').empty();
         currentPage = 0;
         dayCache = {};
+        $('.result-count-wrapper').removeClass('hidden');
+        $('.result-count-wrapper .current-search').text(text);
+        $('.result-count-wrapper .result-count').text(res.count);
+        
         res.data.forEach(addItem)
         if (res.hasMore) {
             $('.load-more').removeClass('hidden')
@@ -375,6 +381,14 @@ $('.submit').click(function () {
             $('.load-more').addClass('hidden')
         }
     })
+
+}
+
+$('.submit').click(doSearch)
+$('.search').keypress(function (e) {
+    if(e.which == 10 || e.which == 13) {
+        doSearch()
+    }
 })
 
 $('.load-more button').click(function () {
