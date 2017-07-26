@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Searching in <%= channel %></title>
+        <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+        <link href="/components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/search.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div class="header">
+            <a class="button" href="javascript:window.history.back();">← back</a>
+        </div>
+        <div class="search-wrap">
+            <div class="search-inner">
+                <input class="search" placeholder="search in <%= channel %>"></input><!--
+                --><button class="submit"></button>
+            </div>
+        </div>
+        <div class="results">
+            <div class="day">
+                <div class="day-name item">
+                    <span class="day-text">9-9</span> (<span class="count">0</span>)
+                </div>
+                <div class="result item">
+                    <a class="open-link" href="#">
+                        open
+                    </a>
+                    <span class="time">
+                        08:15
+                    </span>
+                    <span class="from">
+                        from
+                    </span>
+                    :
+                    <span class="message">
+                        message
+                    </span>
+                </div>
+                
+            </div>
+        </div>
+        <div class="load-more"><button>load-more</button></div>
+        <script src="/components/jquery/dist/jquery.min.js"></script>
+        <script src="/components/moment/moment.js"></script>
+        <script>
+            var channel = <%- JSON.stringify(channel) %>;
+            var config = <%- JSON.stringify({
+                locale : globalConfig.locale,
+                timezone : globalConfig.timezone,
+            }) -%>;
+        </script>
+        <script src="/js/search.js"></script>
+    </body>
+</html>

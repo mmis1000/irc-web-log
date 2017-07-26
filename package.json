@@ -27,7 +27,7 @@
     "lru-cache": "^4.0.2",
     "mime": "^1.3.4",
     "moment": "^2.10.3",
-    "mongo-express": "^0.30.18",
+    "mongo-express": "^0.42.0",
     "mongoose": "^4.4.6",
     "mongoose-deep-populate": "^2.0.3",
     "mubsub": "^1.0.4",

@@ -808,6 +808,7 @@ router.get('/api/medias/:type/:page', function(req, res, next) {
     res.status(500).json(err);
   })
 })
+
 router.get('/photo-wall/:page', function (req, res, next) {
   if (!req.params.page.match(/^[1-9][0-9]*$/)) {
     return next();
@@ -817,37 +818,66 @@ router.get('/photo-wall/:page', function (req, res, next) {
   })
 })
 
+router.get('/api/search', function(req, res, next) {
+  var query = '' + req.query.text;
+  var channel = '' + req.query.channel;
+  var asRegex = req.query.regex === 'true';
+  var pageSize = 100;
+  
+  if ('string' !== typeof req.query.page || !req.query.page.match(/^0|[1-9][0-9]*$/)) {
+    return res.status(400).json({
+      ok: false,
+      err: 'bad page number'
+    })
+  }
+  
+  var page = Number(req.query.page);
+  
+  var regex;
+  
+  if (!asRegex) {
+    query = escapeRegExp(query);
+  }
+  
+  regex = new RegExp(query, 'i')
+  
+  Message.find({
+    message: {$regex: regex},
+    to: '#' + channel
+  })
+  .sort({time: -1})
+  .skip(pageSize * page)
+  .limit(pageSize)
+  .exec()
+  .then(function (result) {
+    res.json({
+      ok: true,
+      data: result
+    });
+  })
+  .catch(function (err) {
+    res.status(500).json({
+      ok: false,
+      err: err.message || err.stack || err.toString
+    })
+  })
+})
+
+router.get('/search/:channel', function (req, res, next) {
+  res.render('search', {channel: req.params.channel})
+})
+
 var mongo_express = require('mongo-express/lib/middleware');
 var mongo_express_config = require('./mongo_express_config');
+
 (function (mongo_express_config) {
-  var URL = require('url');
-  var temp = URL.parse(config.dbpath);
-  
-  if ((/\/\/[^\/,]+,[^\/,]+[^\/]+\//).test(config.dbpath)) {
-    var pathes = (/\/\/([^\/,]+,[^\/,]+[^\/]+)\//).exec(config.dbpath)[1].split(/,/g);
-    mongo_express_config.mongodb.server = pathes.map(function (str) {
-      var temp = str.split(':');
-      mongo_express_config.mongodb.port = parseInt(temp[1]) || mongo_express_config.mongodb.port
-      return temp[0]
-    })
-    mongo_express_config.mongodb.port = mongo_express_config.mongodb.port || 27017;
-  } else {
-    mongo_express_config.mongodb.server = temp.hostname;
-    mongo_express_config.mongodb.port = parseInt(temp.port) || 27017;
-  }
-  console.log('current mongo_express db setting')
-  console.log(JSON.stringify(mongo_express_config.mongodb.server, 0, 4))
-  console.log(JSON.stringify(mongo_express_config.mongodb.port, 0, 4))
-  
-  if (temp.auth) {
-    mongo_express_config.mongodb.auth[0].database = temp.pathname.replace(/^\//, '');
-    mongo_express_config.mongodb.auth[0].username = temp.auth.split(':')[0]
-    mongo_express_config.mongodb.auth[0].password = decodeURIComponent(temp.auth.split(':').slice(1).join(':'))
-  }
-   mongo_express_config.basicAuth.username = config["db-manager-account"]
-   mongo_express_config.basicAuth.password = config["db-manager-password"]
+   mongo_express_config.mongodb.connectionString = config.dbpath;
+   mongo_express_config.options.gridFSEnabled = true;
+   mongo_express_config.basicAuth.username = config["db-manager-account"];
+   mongo_express_config.basicAuth.password = config["db-manager-password"];
    
 } (mongo_express_config));
+
 if (config["enable-db-manager"]) {
   router.use(config["db-manager-path"], mongo_express(mongo_express_config))
 }
