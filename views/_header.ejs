@@ -71,6 +71,10 @@
     <i class="fa fa-repeat"></i>
     reload
   </a>
+  <a class="item" href="/search/<%= encodeURIComponent(channel.replace(/^#/, '')) %>">
+    <i class="fa fa-search" aria-hidden="true"></i>
+    Search in this channel...
+  </a>
   <a class="item" href="/punch/channel/<%= encodeURIComponent(channel.replace(/^#/, '')) %>">
     <i class="fa fa-info-circle" aria-hidden="true"></i>
     Punch card

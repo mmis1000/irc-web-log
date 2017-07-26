@@ -99,6 +99,7 @@ body {
     display: inline-block;
     vertical-align: middle;
 }
+
 .search-wrap .submit::after {
     content: "　";
     display: inline-block;
@@ -133,6 +134,23 @@ body {
     font-size: 1.5em;
     border-bottom: 1px solid #d7d7d7;
     /*cursor: pointer;*/
+}
+
+.results .open-link {
+    display: inline-block;
+    min-width: 1.5em;
+}
+
+.results .time {
+    display: inline-block;
+    min-width: 5em;
+}
+
+.results .message {
+    display: block;
+    padding-left: 1em;
+    padding-top: 0.5em;
+    line-height: 1.5em;
 }
 
 .load-more {

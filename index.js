@@ -85,13 +85,10 @@ var getUserInfo = router.locals.getUserInfo = (function () {
       .exec();
     })
     .then(function (user) {
-      if (user !== null) {
-        userCache.set(id, user);
-      } else {
-        userCache.set(Q.resolve(null));
-      }
       return user;
     });
+    
+    userCache.set(id, resultPromise);
     
     return resultPromise;
   };
