@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Log | channel list</title>
+    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Log channel list">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- start of SEO area -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta property="og:title" content="Log channel list" />
+    <meta property="og:type" content="website" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/channel-list.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div class="header">
+        <a class="button" href="/">← Home</a>
+    </div>
+    <div class="list">
+        <% 
+        var channels = yield channelPromises;
+        for (var index = 0; index < channels.length; index++) { 
+            var channel = channels[index];
+            var imageSelected = channel.images.length === 0 ? null : channel.images[0].files.filter(function(item) {
+                return item.isThumb;
+            })
+            imageSelected = imageSelected ? imageSelected[0] : null
+        %>
+            <a href="/channel/<%= channel._id.slice(1) %>/<%= getMessageDate(channel.lastMessage) %>">
+                <div class="item">
+                    <% if (imageSelected){ %>
+                        <span class="avatar-wrapper">
+                            <img 
+                                src="/files/<%= imageSelected._id %>" 
+                                class="avatar"
+                                data-role="avatar"
+                                data-media-id="<%= channel.images[0]._id -%>"
+                                data-mime="<%= imageSelected.MIME -%>"
+                                alt="[avatar](media:<%= imageSelected.contentSrc -%>)">
+                        </span>
+                    <% } %>
+                    <span class="channel-name">
+                        <%= channel.getFullName() %>
+                    </span>
+                    <span class="last-message-time">
+                        <%= getTimeHumanReadable(channel.lastMessage) %>
+                    </span>
+                </div>
+            </a>
+        <% } %>
+    </div>
+    <script src="/components/jquery/dist/jquery.min.js"></script>
+    <script>
+    
+function enableWebpConvert() {
+  $(function() {
+    $('img[data-mime="image/webp"]').each(function () {
+      var src = $(this).attr('src');
+      src = src.replace(/\?.*$/, '?convert=png&.png');
+      $(this).attr('src', src);
+    })
+  });
+}
+var hasWebP = (function() {
+    // some small (2x1 px) test images for each feature
+    var images = {
+        basic: "data:image/webp;base64,UklGRjIAAABXRUJQVlA4ICYAAACyAgCdASoCAAEALmk0mk0iIiIiIgBoSygABc6zbAAA/v56QAAAAA==",
+        lossless: "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA="
+    };
+
+    return function(feature) {
+        var deferred = $.Deferred();
+
+        $("<img>").on("load", function() {
+            // the images should have these dimensions
+            if(this.width === 2 && this.height === 1) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+        }).on("error", function() {
+            deferred.reject();
+        }).attr("src", images[feature || "basic"]);
+
+        return deferred.promise();
+    }
+})();
+
+hasWebP().then(function (){}, function (e) {
+  window.noWebp = noWebp = true;
+  console.log('enable convert')
+  enableWebpConvert()
+})
+
+    </script>
+</body>
+
+</html>

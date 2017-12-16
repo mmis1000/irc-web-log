@@ -12,6 +12,8 @@ getUserSchema = (mongoose, mediaCollectionName = "Media", collectionName = "User
     lastName: String
     
     profileUrl: String
+    
+    type: String
   }, { collection : collectionName }
   
   UserSchema.methods.getFullName = ()->

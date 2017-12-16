@@ -682,6 +682,75 @@ router.get('/punch/channel/:channel', function (req, res, next) {
   })
 })
 
+// channel list
+router.get('/channel_list', function (req, res, next) {
+  moment.locale(req.query.locale || config.locale);
+  
+  var data = {
+    getMessageDate: function (message) {
+      return moment(message.time)
+      .utcOffset(config.timezone)
+      .format('YYYY-MM-DD');
+    },
+    getTimeHumanReadable: function (message) {
+      return moment(message.time)
+      .utcOffset(config.timezone)
+      .fromNow();
+    },
+    channelPromises: function () {
+      return User
+      .find({type: 'channel'})
+      .deepPopulate('images images.files')
+      .then(function (channels) {
+        return Q.all(channels.map(function (channel) {
+          return Message
+          .find({to: channel._id})
+          .sort({time: -1})
+          .limit(1)
+          .then(function(message) {
+            channel.lastMessage = message[0];
+            return channel;
+          })
+        }))
+      })
+      .then(function (channels) {
+        return channels
+        .filter(function (channel) {
+          return !!channel.lastMessage;
+        })
+        .sort(function(channel0, channel1) {
+          return channel0.lastMessage.time > channel1.lastMessage.time ? 0 : 1;
+        })
+      })
+    } ()
+  }
+  
+  ejsStream.renderFile('./views/channel_list.ejs', data, {rmWhitespace: true}, function (err, p) {
+    if (err) {
+      return res.status(500).end(err.toString());
+    }
+    p.outputStream.pipe(res);
+    p.catch(function (err) {
+      p.outputStream.unpipe(res);
+      res.end(err.message || err.stack || err.toString());
+      console.log(err);
+    })
+    
+    req.once('end', function () {
+      console.log('request ended')
+      // kill it, if it isn't already
+      setTimeout(function () {
+        try {
+          res.end(null);
+        } catch (e) {}
+      }, 10)
+      p.defered.interrupt();
+    })
+    
+  })
+})
+
+
 var sockets = {};
 // curl live interface
 router.get('/curl/:channel/', function (req, res, next) {
