@@ -719,7 +719,7 @@ router.get('/channel_list', function (req, res, next) {
           return !!channel.lastMessage;
         })
         .sort(function(channel0, channel1) {
-          return channel0.lastMessage.time.getTime() > channel1.lastMessage.time.getTime() ? 0 : 1;
+          return channel0.lastMessage.time.getTime() > channel1.lastMessage.time.getTime() ? -1 : 1;
         })
       })
     } ()
