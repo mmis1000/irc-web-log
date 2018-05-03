@@ -131,6 +131,12 @@ body, html {
   #messages .message .from {
     min-width:120px;
     text-align:right;
+    
+    /* Trim very very long name */
+    max-width: 140px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   #messages .message .word {
     float: none;
