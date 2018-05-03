@@ -57,7 +57,7 @@
     </div>
     <!--
     original data:
-    <%- JSON.stringify(channels).replace(/-+/g, '-') %>
+    <%- JSON.stringify(channels.map(function(c){var t = c.toObject(); t.lastMessage = c.lastMessage; return t}), 0, 4).replace(/-+/g, '-') %>
     -->
     <script src="/components/jquery/dist/jquery.min.js"></script>
     <script>
