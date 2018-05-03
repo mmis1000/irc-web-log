@@ -51,6 +51,7 @@
       .format('YYYY-MM-DD')
     %>" />
 <% } else { %>
+    <meta name="robots" content="noindex">
     <link rel="prev" href="/channel/<%= channel.slice(1) %>/<%= 
       moment(selectedDay)
       .subtract(1, 'days')
