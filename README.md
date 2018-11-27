@@ -1,5 +1,7 @@
 ## irc-log-bot
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mmis1000/irc-web-log.svg)](https://greenkeeper.io/)
+
 This is used with <a href='https://github.com/YSITD/irc-reply-bot'>irc-reply-bot</a> 's commandlog2 module
 
 And provides a material design styled web-log.
