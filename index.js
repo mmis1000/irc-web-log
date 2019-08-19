@@ -103,9 +103,21 @@ db.once('open', onDbConnect.bind(null, null));
 var escapeRegExp = function(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 }
+/**
+ * @type {import('mongoose').Model}
+ */
 var Message = null;
+/**
+ * @type {import('mongoose').Model}
+ */
 var Media = null;
+/**
+ * @type {import('mongoose').Model}
+ */
 var File = null;
+/**
+ * @type {import('mongoose').Model}
+ */
 var User = null;
 var gfs = null;
 var ejsStream = require("ejs-promise");
@@ -416,6 +428,79 @@ function checkOrWritePage(name, content, cb) {
   }
   
 }
+
+router.get('/channel-raw/:channel/:date', function (req, res, next) {
+  // set moment locale here for performence
+  try {
+    moment.locale(req.query.locale || config.locale);
+  } catch (e) {
+    console.error(e.stack || e.message || e.toString());
+  }
+  
+  if (!req.params.date.match(/^\d\d\d\d-\d\d-\d\d$/) && req.params.date !== 'today') {
+    res.status(404).end('unknown date: ' + req.params.date);
+    return;
+  }
+
+  var isToday = false;
+  var start = req.params.date
+
+  if (start === 'today') {
+    start = moment().utcOffset(config.timezone).startOf('day').toDate();
+    isToday = true;
+  } else {
+    start = moment(start + ' ' + config.timezone, 'YYYY-MM-DD Z').toDate();
+    if (isNaN( start.getTime()) ){
+      res.status(404).end('unknown date: ' + req.params.date);
+      return;
+    }
+    if (moment(start).add(1, 'days').isAfter(new Date())) {
+      res.redirect('/channel/' + encodeURIComponent(req.params.channel) + '/today');
+      return;
+    }
+  }
+
+  var query = {};
+  var channel = '#' + req.params.channel
+  query.to = channel;
+  query.time = {
+    $gte : start,
+    $lt : moment(start).utcOffset(config.timezone).endOf('day').toDate()
+  }
+
+  res.header('Content-Type', 'text/plain; charset=utf-8');
+
+  res.write('-- ' + channel + ' - ' + moment(start).utcOffset(config.timezone).format('YYYY-MM-DD Z') + ' --\n')
+
+  var ended = false
+  Message.find(query)
+    .sort({ 'time' : 1})
+    .stream()
+    .on('data', function (doc) {
+      res.write(moment(doc.time).utcOffset(config.timezone).format('HH:mm:ss') + ' <' + doc.from + '> ' + doc.message + '\n')
+      // do something with the mongoose document
+    })
+    .on('error', function (err) {
+      if (ended) return;
+      ended = true;
+      res.status(500).end(err.stack ? err.stack : err.toString());
+      // handle the error
+    }).on('close', function () {
+      if (ended) return;
+      ended = true;
+      res.end();
+      // the stream is closed
+    });
+    
+  req.on("close", function() {
+    console.log('connection aborted')
+    try {
+      stream.destroy()
+    } catch (err) {
+      console.error(err)
+    }
+  });
+})
 
 router.get('/files/:id', function (req, res, next) {
   
