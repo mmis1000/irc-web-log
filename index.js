@@ -494,11 +494,6 @@ router.get('/channel-raw/:channel/:date', function (req, res, next) {
     
   req.on("close", function() {
     console.log('connection aborted')
-    try {
-      stream.destroy()
-    } catch (err) {
-      console.error(err)
-    }
   });
 })
 
