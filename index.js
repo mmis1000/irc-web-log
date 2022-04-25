@@ -19,7 +19,6 @@ var LRU = require("lru-cache"),
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 var parseRange = require('range-parser');
 
-var Grid = require('gridfs-stream')
 var moment = require('moment');
 var mubsub = require('mubsub');
 var convert = require('./convert');
@@ -94,7 +93,7 @@ var getUserInfo = router.locals.getUserInfo = (function () {
   };
 } ());
 
-mongoose.connect(config.dbpath, config['mongoose-options'] || {server: { poolSize: 40 }});
+mongoose.connect(config.dbpath, config['mongoose-options'] || {});
 
 var db = mongoose.connection;
 db.on('error', onDbConnect.bind(null));
@@ -179,7 +178,7 @@ function onDbConnect(err, cb) {
     // throw err;
     console.log('Error occured!', err);
     // Attempt reconnect
-    mongoose.connect(config.dbpath, {server: { poolSize: 40 }});
+    // mongoose.connect(config.dbpath, {});
     return;
   }
   
@@ -195,7 +194,9 @@ function onDbConnect(err, cb) {
   UserSchema.plugin(deepPopulate);
   User =  mongoose.model('User', UserSchema)
   
-  gfs = Grid(mongoose.connection.db, mongoose.mongo)
+  gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+    bucketName: 'FileContent'
+  })
   //init server after db connection finished
   server.listen(config.port || 8080, config.ip || "0.0.0.0", function(){
     var addr = server.address();
@@ -508,10 +509,7 @@ router.get('/files/:id', function (req, res, next) {
       res.set('Content-Length', doc.length);
       var range = req.headers.range ? parseRange(doc.length, req.headers.range) : null;
       if (range === null){
-        var readstream = gfs.createReadStream({
-          filename: doc.contentSrc,
-          root: 'FileContent'
-        });
+        var readstream = gfs.openDownloadStreamByName(doc.contentSrc, {});
       } else if (range !== -1 && range.type === 'bytes' && range.length === 1) {
         res.set('Content-Length', range[0].end - range[0].start + 1);
         var temp = {};
@@ -526,10 +524,9 @@ router.get('/files/:id', function (req, res, next) {
     			last: range[0].end,
     			length: doc.length
     		});
-        var readstream = gfs.createReadStream({
-          filename: doc.contentSrc,
-          root: 'FileContent',
-          range: temp
+        var readstream = gfs.openDownloadStreamByName(doc.contentSrc, {
+          start: temp.startPos,
+          end: temp.endPos
         });
         res.status(206);
       } else {
@@ -1054,8 +1051,12 @@ var mongo_express_config = require('./mongo_express_config');
    
 } (mongo_express_config));
 
-if (config["enable-db-manager"]) {
-  router.use(config["db-manager-path"], mongo_express(mongo_express_config))
+async function finalize () {
+  if (config["enable-db-manager"]) {
+    router.use(config["db-manager-path"], await mongo_express(mongo_express_config))
+  }
+  
+  router.use(express.static(path.resolve(__dirname, 'public')));  
 }
 
-router.use(express.static(path.resolve(__dirname, 'public')));
+finalize()

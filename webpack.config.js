@@ -1,19 +1,21 @@
 // webpack.config.js
 const path = require("path");
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
+    mode: 'production',
     entry: {
-        "channel-admin": "imports?$=jquery!./public/js/channel-admin.js",
+        "channel-admin": "imports-loader?imports=default|jquery|$!./public/js/channel-admin.js",
         // only parts for initial view
-        "channel-light" : [
+        "channel-light": [
             "normalize_css",
             "font_awesome",
             "channel_common_css",
             "header_css"
         ],
         // only parts for initial view
-        "channel-light-admin" : [
+        "channel-light-admin": [
             "normalize_css",
             "font_awesome",
             "channel_common_css",
@@ -21,14 +23,14 @@ module.exports = {
             "header_css"
         ],
         "channel-common": [
-            "imports?fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,$=jquery,lazyload!./public/js/channel-common.js", 
-            "imports?Hammer=hammerjs,google_material_icon,moment,polyfill_datepicker,$=jquery,lazyload!./public/js/header.js",
+            "imports-loader?imports=fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,default|jquery|$,lazyload!./public/js/channel-common.js",
+            "imports-loader?imports=default|hammerjs|Hammer,google_material_icon,moment,polyfill_datepicker,default|jquery|$,lazyload!./public/js/header.js",
             "./public/js/scroll-fix.js"
         ],
         "channel-common-with-live": [
-            "imports?fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,$=jquery,lazyload!./public/js/channel-common.js", 
-            "imports?Hammer=hammerjs,google_material_icon,moment,polyfill_datepicker,$=jquery,lazyload!./public/js/header.js", 
-            "imports?moment,$=jquery,io=socket_io,md5!./public/js/live.js",
+            "imports-loader?imports=fancybox,jquery_fancybox_buttons,jquery_fancybox_media,jquery_fancybox_thumbs,default|jquery|$,lazyload!./public/js/channel-common.js",
+            "imports-loader?imports=default|hammerjs|Hammer,google_material_icon,moment,polyfill_datepicker,default|jquery|$,lazyload!./public/js/header.js",
+            "imports-loader?imports=moment,default|jquery|$,default|socket_io|io,md5!./public/js/live.js",
             "./public/js/scroll-fix.js"
         ]
     },
@@ -38,46 +40,84 @@ module.exports = {
         publicPath: "/packed/"
     },
     module: {
-        loaders: [
+        rules: [
             // Extract css files
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader?minimize")
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
             },
-            
-            { 
-                test: /jquery\.fancybox\.pack\.js$/, 
-                loader:
-                    "imports?jQuery=jquery,fancybox_css,jquery_mousewheel,jquery_fancybox_buttons_css,jquery_fancybox_thumbs_css"
+
+            {
+                test: /jquery\.fancybox\.pack\.js$/,
+                use:
+                    "imports-loader?imports=default|jquery|jQuery,fancybox_css,jquery_mousewheel,jquery_fancybox_buttons_css,jquery_fancybox_thumbs_css"
             },
             {
                 test: /(\/jquery\.fancybox-|\/jquery\.mousewheel-).+\.js$/,
-                loader:
-                    "imports?jQuery=jquery"
+                use:
+                    "imports-loader?imports=default|jquery|jQuery"
             },
-            { test: /polyfill-datepicker\.js$/, loader:'imports?$=jquery,bootstrap_material_datetimepicker'},
-            { test: /bootstrap-material-datetimepicker\.js$/, loader: "imports?moment,jQuery=jquery,bootstrap_material_datetimepicker_css" },
-            { test: /jquery\.lazyload\.js$$/, loader: "imports?jQuery=jquery" },
-            
-            { test: /\.js$/, loader: 'uglify' },
-            
-            { test: /\.eot/, loader: 'url-loader?limit=10000&mimetype=application/vnd.ms-fontobject' },
-            { test: /\.woff2(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff2' },
-            { test: /\.woff(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
-            { test: /\.ttf(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-ttf' },
-            { test: /\.svg(\?\S*)?$/, loader: 'url-loader?limit=10000&mimetype=image/svg+xml' },
-            { test: /\.png$|\.jpg$|\.webp$|\.gif/, loader: 'file-loader' }
+            { test: /polyfill-datepicker\.js$/, use: 'imports-loader?imports=default|jquery|$,bootstrap_material_datetimepicker' },
+            { test: /bootstrap-material-datetimepicker\.js$/, use: "imports-loader?imports=moment,default|jquery|jQuery,bootstrap_material_datetimepicker_css" },
+            { test: /jquery\.lazyload\.js$$/, use: "imports-loader?imports=default|jquery|jQuery" },
+
+            { test: /\.js$/, use: 'uglify-loader' },
+
+            {
+                test: /\.eot/, type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 4 * 1024 // 4kb
+                    }
+                }
+            },
+            {
+                test: /\.woff2(\?\S*)?$/, type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 4 * 1024 // 4kb
+                    }
+                }
+            },
+            {
+                test: /\.woff(\?\S*)?$/, type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 4 * 1024 // 4kb
+                    }
+                }
+            },
+            {
+                test: /\.ttf(\?\S*)?$/, type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 4 * 1024 // 4kb
+                    }
+                }
+            },
+            {
+                test: /\.svg(\?\S*)?$/, type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 4 * 1024 // 4kb
+                    }
+                }
+            },
+            { test: /\.png$|\.jpg$|\.webp$|\.gif/, type: 'asset/resource' }
         ]
     },
     resolve: {
-        root: path.resolve(__dirname, 'public/'),
+        modules: [
+            path.resolve(__dirname, 'public/'),
+            'node_modules'
+        ],
         extensions: ['', '.js', '.json', '.html', '.css'],
         alias: {
-            "jquery": 
+            "jquery":
                 path.resolve(__dirname, "public/components/jquery/dist/jquery.min.js"),
-            "fancybox": 
+            "fancybox":
                 path.resolve(__dirname, "public/components/fancybox/source/jquery.fancybox.pack.js"),
-            "bootstrap_material_datetimepicker": 
+            "bootstrap_material_datetimepicker":
                 path.resolve(__dirname, "public/components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"),
             "moment":
                 path.resolve(__dirname, "public/components/moment/moment.js"),
@@ -91,21 +131,21 @@ module.exports = {
                 path.resolve(__dirname, "public/js/jquery.lazyload.js"),
             "polyfill_datepicker":
                 path.resolve(__dirname, "public/js/polyfill-datepicker.js"),
-            "bootstrap_material_datetimepicker_css": 
+            "bootstrap_material_datetimepicker_css":
                 path.resolve(__dirname, "public/components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css"),
-            "channel_common_css": 
+            "channel_common_css":
                 path.resolve(__dirname, "public/css/channel.css"),
-            "channel_admin_css": 
+            "channel_admin_css":
                 path.resolve(__dirname, "public/css/channel-admin.css"),
-            "header_css": 
+            "header_css":
                 path.resolve(__dirname, "public/css/header.css"),
-            "google_material_icon": 
+            "google_material_icon":
                 path.resolve(__dirname, "public/css/google-material-icon.css"),
-            "font_awesome": 
+            "font_awesome":
                 path.resolve(__dirname, "public/components/font-awesome/css/font-awesome.min.css"),
             "normalize_css":
                 path.resolve(__dirname, "public/components/normalize-css/normalize.css"),
-                
+
             "fancybox_css":
                 path.resolve(__dirname, "public/components/fancybox/source/jquery.fancybox.css"),
             "jquery_mousewheel":
@@ -120,11 +160,20 @@ module.exports = {
                 path.resolve(__dirname, "public/components/fancybox/source/helpers/jquery.fancybox-thumbs.js"),
             "jquery_fancybox_thumbs_css":
                 path.resolve(__dirname, "public/components/fancybox/source/helpers/jquery.fancybox-thumbs.css"),
-        } 
+        }
+    },
+    optimization: {
+        minimizer: [
+            // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+            `...`,
+            new CssMinimizerPlugin(),
+        ],
     },
     // Use the plugin to specify the resulting filename (and add needed behavior to the compiler)
     plugins: [
-        new ExtractTextPlugin("[name].css")
+        new MiniCssExtractPlugin({
+            chunkFilename: "[name].css"
+        })
     ]
 }
 
@@ -134,13 +183,13 @@ function getSocketIoPath(basePath) {
         sioPath = path.resolve(basePath, "node_modules/socket.io/node_modules/socket.io-client/");
         fs.statSync(sioPath);
         return sioPath;
-    } catch(e) {}
-    
+    } catch (e) { }
+
     try {
         sioPath = path.resolve(basePath, "node_modules/socket.io-client/");
         fs.statSync(sioPath);
         return sioPath;
-    } catch(e) {}
-    
+    } catch (e) { }
+
     throw new Error('cannot find socket io at expected path, please do npm install first')
 }

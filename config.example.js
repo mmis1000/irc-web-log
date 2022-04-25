@@ -7,9 +7,10 @@ module.exports = {
   "timezone" : "+00:00",
   "indexItems" : [
     {"text" : "Web Chat for #test5566 on freenode.net", "path" : "http://webchat.freenode.net/?channels=%23test5566"},
+    {"text" : "Channel List", "path": "/channel_list"},
     {"text" : "Log for #test5566", "path" : "/channel/test5566/today"}
   ],
-  "mongoose-options": {server: { poolSize: 40 }},
+  "mongoose-options": {},
   "ejs-options": {
     "rmWhitespace": true,
     "cache": true
