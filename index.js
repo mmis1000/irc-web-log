@@ -7,7 +7,7 @@ var fs = require("fs");
 var basicAuth = require('basic-auth-connect');
 var bodyParser = require('body-parser')
 var range = require('express-range');
-var socketio = require('socket.io');
+var { Server } = require('socket.io');
 var mubsubAdapter = require('socket.io-adapter-mongo');
 var express = require('express');
 var Q = require('q');
@@ -33,7 +33,7 @@ var config = require('./config')
 //
 var router = express();
 var server = http.createServer(router);
-var io = socketio.listen(server);
+var io = new Server(server);
 
 var MessageChannel = mubsub(config.dbpath).channel(config.collectionName + 'Trigger');
 
